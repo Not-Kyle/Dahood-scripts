@@ -2,9 +2,9 @@ local coryu = {
     ['CORXYULOCALPLAYER'] = game:GetService('Players').LocalPlayer;
     ['Mouse'] = game:GetService('Players').LocalPlayer:GetMouse();
     ['Run'] = false;
-	['runhotkey'] = 'q' -- you can change your run hotkey here
+    ['runhotkey'] = 'q' -- you can change your run hotkey here
     ['RunSpeed'] = 170; -- you can change your run speed here
-	['norunhotkey'] = 'e' -- you can change your no run hotkey here
+    ['norunhotkey'] = 'e' -- you can change your no run hotkey here
 }
 
 coryu['Mouse'].KeyDown:connect(function(coryuplrkey)
@@ -12,13 +12,13 @@ coryu['Mouse'].KeyDown:connect(function(coryuplrkey)
     coryu['Run'] = true
     	while coryu['Run'] do
     	task.wait(0.1)
-        	coryu['CORXYULOCALPLAYER'].Character.HumanoidRootPart.Velocity = coryu['CORXYULOCALPLAYER'].Character.HumanoidRootPart.CFrame.lookVector * coryu['RunSpeed']
+            coryu['CORXYULOCALPLAYER'].Character.HumanoidRootPart.Velocity = coryu['CORXYULOCALPLAYER'].Character.HumanoidRootPart.CFrame.lookVector * coryu['RunSpeed']
         end
     end
 end)
 
 coryu['Mouse'].KeyDown:connect(function(coryustpkey)
-	if coryustpkey:lower() == coryu['norunhotkey'] then
-		coryu['Run'] = false
-	end
+    if coryustpkey:lower() == coryu['norunhotkey'] then
+	coryu['Run'] = false
+    end
 end)
