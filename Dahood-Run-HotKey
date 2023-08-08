@@ -2,13 +2,13 @@ local coryu = {
     ['CORXYULOCALPLAYER'] = game:GetService('Players').LocalPlayer;
     ['Mouse'] = game:GetService('Players').LocalPlayer:GetMouse();
     ['Run'] = false;
-    ['runhotkey'] = 'q' -- you can change your run hotkey here
+    ['runhotkey'] = 'q'; -- you can change your run hotkey here
     ['RunSpeed'] = 170; -- you can change your run speed here
-    ['norunhotkey'] = 'e' -- you can change your no run hotkey here
+    ['norunhotkey'] = 'e'; -- you can change your no run hotkey here
 }
 
 coryu['Mouse'].KeyDown:connect(function(coryuplrkey)
-    if coryuplrkey:lower() == ['runhotkey'] then
+    if coryuplrkey:lower() == coryu['runhotkey'] then
     coryu['Run'] = true
     	while coryu['Run'] do
     	task.wait(0.1)
