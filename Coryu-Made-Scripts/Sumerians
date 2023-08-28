@@ -1,0 +1,286 @@
+getgenv().Players = game:GetService'Players';
+getgenv().LocalPlayer = Players.LocalPlayer;
+getgenv().Mouse = LocalPlayer:GetMouse();
+getgenv().Teleport = game:GetService'TeleportService'
+
+local yas = Instance.new("ScreenGui")
+yas.Name = "yas"
+yas.Parent = LocalPlayer:WaitForChild("PlayerGui")
+yas.ResetOnSpawn = false
+
+local BACKFRAMETOSTATUS = Instance.new("ImageLabel")
+BACKFRAMETOSTATUS.Name = "BACKFRAMETOSTATUS"
+BACKFRAMETOSTATUS.Parent = yas
+BACKFRAMETOSTATUS.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BACKFRAMETOSTATUS.BackgroundTransparency = 1.000
+BACKFRAMETOSTATUS.Position = UDim2.new(0.2, 0, 0.803837836, 0)
+BACKFRAMETOSTATUS.Size = UDim2.new(0, 233, 0, 195)
+BACKFRAMETOSTATUS.Image = "rbxassetid://3570695787"
+BACKFRAMETOSTATUS.ImageColor3 = Color3.fromRGB(0, 0, 0)
+BACKFRAMETOSTATUS.ScaleType = Enum.ScaleType.Slice
+BACKFRAMETOSTATUS.SliceCenter = Rect.new(100, 100, 100, 100)
+BACKFRAMETOSTATUS.SliceScale = 0.040
+
+local statusframe = Instance.new("Frame")
+statusframe.Name = "statusframe"
+statusframe.Parent = BACKFRAMETOSTATUS
+statusframe.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+statusframe.BorderColor3 = Color3.fromRGB(85, 0, 255)
+statusframe.BorderSizePixel = 2
+statusframe.Position = UDim2.new(0.0257510729, 0, 0.0307692308, 0)
+statusframe.Size = UDim2.new(0, 221, 0, 189)
+
+local gui = Instance.new("ImageLabel")
+gui.Name = "gui"
+gui.Parent = yas
+gui.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+gui.BackgroundTransparency = 1.000
+gui.Position = UDim2.new(0.642720938, 0, 0.0804721043, 0)
+gui.Size = UDim2.new(0, 475, 0, 563)
+gui.Image = "rbxassetid://3570695787"
+gui.ImageColor3 = Color3.fromRGB(0, 0, 0)
+gui.ScaleType = Enum.ScaleType.Slice
+gui.SliceCenter = Rect.new(100, 100, 100, 100)
+gui.SliceScale = 0.040
+gui.ZIndex = 1
+gui.Active = true
+gui.Draggable = true
+
+local frontgui = Instance.new("Frame")
+frontgui.Name = "frontgui"
+frontgui.Parent = gui
+frontgui.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+frontgui.BorderColor3 = Color3.fromRGB(85, 0, 255)
+frontgui.BorderSizePixel = 2
+frontgui.Position = UDim2.new(0.0107457852, 0, 0.00946034119, 0)
+frontgui.Size = UDim2.new(0, 464, 0, 552)
+frontgui.ZIndex = 1
+
+local line = Instance.new("Frame")
+line.Name = "line"
+line.Parent = frontgui
+line.BackgroundColor3 = Color3.fromRGB(85, 0, 255)
+line.BorderColor3 = Color3.fromRGB(0, 0, 0)
+line.BorderSizePixel = 0
+line.Position = UDim2.new(0, 0, 0.954710126, 0)
+line.Size = UDim2.new(0, 464, 0, 2)
+line.ZIndex = 1
+
+local title = Instance.new("TextLabel")
+title.Name = "title"
+title.Parent = frontgui
+title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1.000
+title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+title.BorderSizePixel = 0
+title.Position = UDim2.new(0.853448272, 0, 0.954710126, 0)
+title.Size = UDim2.new(0, 68, 0, 25)
+title.ZIndex = 1
+title.Font = Enum.Font.Highway
+title.Text = "Sumerian"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 17.000
+
+local combatBUTTON = Instance.new("TextButton")
+combatBUTTON.Name = "combatBUTTON"
+combatBUTTON.Parent = frontgui
+combatBUTTON.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+combatBUTTON.BackgroundTransparency = 1.000
+combatBUTTON.BorderColor3 = Color3.fromRGB(0, 0, 0)
+combatBUTTON.BorderSizePixel = 0
+combatBUTTON.Position = UDim2.new(0, 0, 0.954710126, 0)
+combatBUTTON.Size = UDim2.new(0, 61, 0, 25)
+combatBUTTON.ZIndex = 1
+combatBUTTON.Font = Enum.Font.Highway
+combatBUTTON.Text = "Combat"
+combatBUTTON.TextColor3 = Color3.fromRGB(255, 255, 255)
+combatBUTTON.TextSize = 17.000
+
+local miscBUTTON = Instance.new("TextButton")
+miscBUTTON.Name = "miscBUTTON"
+miscBUTTON.Parent = frontgui
+miscBUTTON.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+miscBUTTON.BackgroundTransparency = 1.000
+miscBUTTON.BorderColor3 = Color3.fromRGB(0, 0, 0)
+miscBUTTON.BorderSizePixel = 0
+miscBUTTON.Position = UDim2.new(0.118534483, 0, 0.954710126, 0)
+miscBUTTON.Size = UDim2.new(0, 48, 0, 25)
+miscBUTTON.Font = Enum.Font.Highway
+miscBUTTON.Text = "Misc"
+miscBUTTON.TextColor3 = Color3.fromRGB(255, 255, 255)
+miscBUTTON.TextSize = 17.000
+
+local bfC = Instance.new("Frame")
+bfC.Name = "bfC"
+bfC.Parent = combatBUTTON
+bfC.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+bfC.BackgroundTransparency = 1.000
+bfC.BorderColor3 = Color3.fromRGB(0, 0, 0)
+bfC.BorderSizePixel = 0
+bfC.Position = UDim2.new(0, 0, -21.0799999, 0)
+bfC.Size = UDim2.new(0, 464, 0, 527)
+bfC.ZIndex = 1
+bfC.Visible = true
+
+local bfM = Instance.new("Frame")
+bfM.Name = "bfM"
+bfM.Parent = miscBUTTON
+bfM.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+bfM.BackgroundTransparency = 1.000
+bfM.BorderColor3 = Color3.fromRGB(0, 0, 0)
+bfM.BorderSizePixel = 0
+bfM.Position = UDim2.new(-1.14583337, 0, -21.0799999, 0)
+bfM.Size = UDim2.new(0, 464, 0, 527)
+bfM.Visible = false
+
+local sf1M = Instance.new("ScrollingFrame")
+sf1M.Name = "sf1M"
+sf1M.Parent = bfM
+sf1M.Active = true
+sf1M.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sf1M.BackgroundTransparency = 1.000
+sf1M.BorderColor3 = Color3.fromRGB(0, 0, 0)
+sf1M.BorderSizePixel = 0
+sf1M.Size = UDim2.new(0, 232, 0, 527)
+sf1M.ScrollBarThickness = 4
+sf1M.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
+
+local sf1C = Instance.new("ScrollingFrame")
+sf1C.Name = "sf1C"
+sf1C.Parent = bfC
+sf1C.Active = true
+sf1C.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+sf1C.BackgroundTransparency = 1.000
+sf1C.BorderColor3 = Color3.fromRGB(0, 0, 0)
+sf1C.BorderSizePixel = 0
+sf1C.Size = UDim2.new(0, 232, 0, 527)
+sf1C.ZIndex = 1
+sf1C.ScrollBarThickness = 4
+sf1C.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
+
+
+local miscframe_sf1M = Instance.new("Frame")
+miscframe_sf1M.Name = "miscframe_sf1M"
+miscframe_sf1M.Parent = sf1M
+miscframe_sf1M.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+miscframe_sf1M.BorderColor3 = Color3.fromRGB(0, 0, 0)
+miscframe_sf1M.BorderSizePixel = 0
+miscframe_sf1M.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
+miscframe_sf1M.Size = UDim2.new(0, 215, 0, 80)
+
+local targetframe_sf1c = Instance.new("Frame")
+targetframe_sf1c.Name = "targetframe_sf1c"
+targetframe_sf1c.Parent = sf1C
+targetframe_sf1c.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+targetframe_sf1c.BorderColor3 = Color3.fromRGB(0, 0, 0)
+targetframe_sf1c.BorderSizePixel = 0
+targetframe_sf1c.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
+targetframe_sf1c.Size = UDim2.new(0, 215, 0, 337)
+targetframe_sf1c.ZIndex = 1
+
+local miscTITLE = Instance.new("TextLabel")
+miscTITLE.Name = "miscTITLE"
+miscTITLE.Parent = miscframe_sf1M
+miscTITLE.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+miscTITLE.BackgroundTransparency = 1.000
+miscTITLE.BorderColor3 = Color3.fromRGB(0, 0, 0)
+miscTITLE.BorderSizePixel = 0
+miscTITLE.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+miscTITLE.Size = UDim2.new(0, 40, 0, 19)
+miscTITLE.Font = Enum.Font.Highway
+miscTITLE.Text = "Game"
+miscTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
+miscTITLE.TextSize = 13.000
+miscTITLE.TextXAlignment = Enum.TextXAlignment.Left
+
+local targetTITLE = Instance.new("TextLabel")
+targetTITLE.Name = "targetTITLE"
+targetTITLE.Parent = targetframe_sf1c
+targetTITLE.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+targetTITLE.BackgroundTransparency = 1.000
+targetTITLE.BorderColor3 = Color3.fromRGB(0, 0, 0)
+targetTITLE.BorderSizePixel = 0
+targetTITLE.Position = UDim2.new(-0.0349246003, 0, -0.000779511291, 0)
+targetTITLE.Size = UDim2.new(0, 61, 0, 19)
+targetTITLE.ZIndex = 1
+targetTITLE.Font = Enum.Font.Highway
+targetTITLE.Text = "Targeting"
+targetTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
+targetTITLE.TextSize = 13.000
+
+
+local rejoinBUTTON_misc = Instance.new("TextButton")
+rejoinBUTTON_misc.Name = "rejoinBUTTON_misc"
+rejoinBUTTON_misc.Parent = miscframe_sf1M
+rejoinBUTTON_misc.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+rejoinBUTTON_misc.BorderColor3 = Color3.fromRGB(255, 255, 255)
+rejoinBUTTON_misc.Position = UDim2.new(-0.00465116277, 0, 0.33, 0)
+rejoinBUTTON_misc.Size = UDim2.new(0, 13, 0, 13)
+rejoinBUTTON_misc.Font = Enum.Font.Highway
+rejoinBUTTON_misc.Text = ""
+rejoinBUTTON_misc.TextColor3 = Color3.fromRGB(255, 255, 255)
+rejoinBUTTON_misc.TextSize = 14.000
+
+local rejoinTEXT = Instance.new("TextLabel")
+rejoinTEXT.Name = "rejoinTEXT"
+rejoinTEXT.Parent = rejoinBUTTON_misc
+rejoinTEXT.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+rejoinTEXT.BackgroundTransparency = 1.000
+rejoinTEXT.BorderColor3 = Color3.fromRGB(0, 0, 0)
+rejoinTEXT.BorderSizePixel = 0
+rejoinTEXT.Position = UDim2.new(1.15384614, 0, 0, 0)
+rejoinTEXT.Size = UDim2.new(0, 52, 0, 13)
+rejoinTEXT.Font = Enum.Font.Highway
+rejoinTEXT.Text = " - Rejoin"
+rejoinTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
+rejoinTEXT.TextSize = 14.000
+rejoinTEXT.TextXAlignment = Enum.TextXAlignment.Left
+
+local shutdownBUTTON_misc = Instance.new("TextButton")
+shutdownBUTTON_misc.Name = "shutdownBUTTON_misc"
+shutdownBUTTON_misc.Parent = miscframe_sf1M
+shutdownBUTTON_misc.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+shutdownBUTTON_misc.BorderColor3 = Color3.fromRGB(255, 255, 255)
+shutdownBUTTON_misc.Position = UDim2.new(-0.00465116277, 0, 0.63, 0)
+shutdownBUTTON_misc.Size = UDim2.new(0, 13, 0, 13)
+shutdownBUTTON_misc.Font = Enum.Font.Highway
+shutdownBUTTON_misc.Text = ""
+shutdownBUTTON_misc.TextColor3 = Color3.fromRGB(255, 255, 255)
+shutdownBUTTON_misc.TextSize = 14.000
+
+local shutdownTEXT = Instance.new("TextLabel")
+shutdownTEXT.Name = "shutdownTEXT"
+shutdownTEXT.Parent = shutdownBUTTON_misc
+shutdownTEXT.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+shutdownTEXT.BackgroundTransparency = 1.000
+shutdownTEXT.BorderColor3 = Color3.fromRGB(0, 0, 0)
+shutdownTEXT.BorderSizePixel = 0
+shutdownTEXT.Position = UDim2.new(1.15384614, 0, 0, 0)
+shutdownTEXT.Size = UDim2.new(0, 52, 0, 13)
+shutdownTEXT.Font = Enum.Font.Highway
+shutdownTEXT.Text = " - Shutdown"
+shutdownTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
+shutdownTEXT.TextSize = 14.000
+shutdownTEXT.TextXAlignment = Enum.TextXAlignment.Left
+
+combatBUTTON.MouseButton1Click:Connect(function()
+    bfC.Visible = not bfC.Visible
+    bfM.Visible = false
+end)
+
+miscBUTTON.MouseButton1Click:Connect(function()
+    bfM.Visible = not bfM.Visible
+    bfC.Visible = false
+end)
+
+rejoinBUTTON_misc.MouseButton1Click:Connect(function()
+	rejoinBUTTON_misc.Text = "X"
+	task.wait(1)
+	Teleport:Teleport(game.PlaceId)
+end)
+
+shutdownBUTTON_misc.MouseButton1Click:Connect(function()
+	shutdownBUTTON_misc.Text = "X"
+	task.wait(1)
+	game:shutdown()
+end)
