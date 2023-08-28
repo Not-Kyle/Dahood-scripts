@@ -158,7 +158,6 @@ sf1C.ZIndex = 1
 sf1C.ScrollBarThickness = 4
 sf1C.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
 
-
 local miscframe_sf1M = Instance.new("Frame")
 miscframe_sf1M.Name = "miscframe_sf1M"
 miscframe_sf1M.Parent = sf1M
@@ -207,7 +206,6 @@ targetTITLE.Font = Enum.Font.Highway
 targetTITLE.Text = "Targeting"
 targetTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
 targetTITLE.TextSize = 13.000
-
 
 local rejoinBUTTON_misc = Instance.new("TextButton")
 rejoinBUTTON_misc.Name = "rejoinBUTTON_misc"
