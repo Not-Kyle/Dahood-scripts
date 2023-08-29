@@ -96,7 +96,7 @@ title.Position = UDim2.new(0.853448272, 0, 0.954710126, 0)
 title.Size = UDim2.new(0, 68, 0, 25)
 title.ZIndex = 1
 title.Font = Enum.Font.Highway
-title.Text = "Sumerian"
+title.Text = "Sumerian - Made By Coryu"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.TextSize = 17.000
 
