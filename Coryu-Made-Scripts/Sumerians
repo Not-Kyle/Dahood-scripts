@@ -1,7 +1,26 @@
+--sumerians
+
 getgenv().Players = game:GetService'Players';
 getgenv().LocalPlayer = Players.LocalPlayer;
 getgenv().Mouse = LocalPlayer:GetMouse();
 getgenv().Teleport = game:GetService'TeleportService'
+getgenv().RunService = game:GetService'RunService'
+getgenv().UserInputService = game:GetService'UserInputService'
+
+-- | Booleans | --
+
+local LookVectorSprint = true
+local LookVectorSprinting = false
+
+-- | Ints | --
+
+local SprintSpeedLookVector = 170;
+
+-- | Hotkeys | --
+
+local LookVectorSpeedKey = 'LeftShift'
+
+-- | Gui | --
 
 local yas = Instance.new("ScreenGui")
 yas.Name = "yas"
@@ -261,6 +280,85 @@ shutdownTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
 shutdownTEXT.TextSize = 14.000
 shutdownTEXT.TextXAlignment = Enum.TextXAlignment.Left
 
+local ui_sf1M = Instance.new("Frame")
+ui_sf1M.Name = "ui_sf1M"
+ui_sf1M.Parent = sf1M
+ui_sf1M.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ui_sf1M.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ui_sf1M.BorderSizePixel = 0
+ui_sf1M.Position = UDim2.new(0.0299999993, 0, 0.0900000036, 0)
+ui_sf1M.Size = UDim2.new(0, 215, 0, 200)
+
+local uiTITLE = Instance.new("TextLabel")
+uiTITLE.Name = "uiTITLE"
+uiTITLE.Parent = ui_sf1M
+uiTITLE.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+uiTITLE.BackgroundTransparency = 1.000
+uiTITLE.BorderColor3 = Color3.fromRGB(0, 0, 0)
+uiTITLE.BorderSizePixel = 0
+uiTITLE.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+uiTITLE.Size = UDim2.new(0, 61, 0, 19)
+uiTITLE.Font = Enum.Font.Highway
+uiTITLE.Text = "User Interface"
+uiTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
+uiTITLE.TextSize = 13.000
+uiTITLE.TextXAlignment = Enum.TextXAlignment.Left
+
+local chatBUTTON_misc = Instance.new("TextButton")
+chatBUTTON_misc.Name = "chatBUTTON_misc"
+chatBUTTON_misc.Parent = ui_sf1M
+chatBUTTON_misc.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+chatBUTTON_misc.BorderColor3 = Color3.fromRGB(255, 255, 255)
+chatBUTTON_misc.Position = UDim2.new(0.0139534883, 0, 0.12715134, 0)
+chatBUTTON_misc.Size = UDim2.new(0, 13, 0, 13)
+chatBUTTON_misc.Font = Enum.Font.Highway
+chatBUTTON_misc.Text = ""
+chatBUTTON_misc.TextColor3 = Color3.fromRGB(255, 255, 255)
+chatBUTTON_misc.TextSize = 14.000
+
+local chatTEXT = Instance.new("TextLabel")
+chatTEXT.Name = "chatTEXT"
+chatTEXT.Parent = chatBUTTON_misc
+chatTEXT.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+chatTEXT.BackgroundTransparency = 1.000
+chatTEXT.BorderColor3 = Color3.fromRGB(0, 0, 0)
+chatTEXT.BorderSizePixel = 0
+chatTEXT.Position = UDim2.new(1.15384614, 0, 0, 0)
+chatTEXT.Size = UDim2.new(0, 52, 0, 13)
+chatTEXT.Font = Enum.Font.Highway
+chatTEXT.Text = " - Chat"
+chatTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
+chatTEXT.TextSize = 14.000
+chatTEXT.TextXAlignment = Enum.TextXAlignment.Left
+
+local shutdownBUTTON_misc = Instance.new("TextButton")
+shutdownBUTTON_misc.Name = "shutdownBUTTON_misc"
+shutdownBUTTON_misc.Parent = ui_sf1M
+shutdownBUTTON_misc.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+shutdownBUTTON_misc.BorderColor3 = Color3.fromRGB(255, 255, 255)
+shutdownBUTTON_misc.Position = UDim2.new(0.0139534883, 0, 0.238998562, 0)
+shutdownBUTTON_misc.Size = UDim2.new(0, 13, 0, 13)
+shutdownBUTTON_misc.Visible = false
+shutdownBUTTON_misc.Font = Enum.Font.Highway
+shutdownBUTTON_misc.Text = ""
+shutdownBUTTON_misc.TextColor3 = Color3.fromRGB(255, 255, 255)
+shutdownBUTTON_misc.TextSize = 14.000
+
+local shutdownTEXT = Instance.new("TextLabel")
+shutdownTEXT.Name = "shutdownTEXT"
+shutdownTEXT.Parent = shutdownBUTTON_misc
+shutdownTEXT.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+shutdownTEXT.BackgroundTransparency = 1.000
+shutdownTEXT.BorderColor3 = Color3.fromRGB(0, 0, 0)
+shutdownTEXT.BorderSizePixel = 0
+shutdownTEXT.Position = UDim2.new(1.15384614, 0, 0, 0)
+shutdownTEXT.Size = UDim2.new(0, 52, 0, 13)
+shutdownTEXT.Font = Enum.Font.Highway
+shutdownTEXT.Text = " - Shutdown"
+shutdownTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
+shutdownTEXT.TextSize = 14.000
+shutdownTEXT.TextXAlignment = Enum.TextXAlignment.Left
+
 combatBUTTON.MouseButton1Click:Connect(function()
     bfC.Visible = not bfC.Visible
     bfM.Visible = false
@@ -269,6 +367,37 @@ end)
 miscBUTTON.MouseButton1Click:Connect(function()
     bfM.Visible = not bfM.Visible
     bfC.Visible = false
+end)
+
+function Chat()
+	local ChatSpy = LocalPlayer.PlayerGui.Chat.Frame
+	ChatSpy.ChatChannelParentFrame.Visible = true 
+	ChatSpy.ChatBarParentFrame.Position = ChatSpy.ChatChannelParentFrame.Position + UDim2.new(UDim.new(), ChatSpy.ChatChannelParentFrame.Size.Y)
+end
+
+RunService.RenderStepped:Connect(function()
+	if LookVectorSprint then
+		if LookVectorSprinting then
+			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.Velocity = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame.lookVector * SprintSpeedLookVector
+		end
+	end
+end)
+
+UserInputService.InputBegan:Connect(function(Action, NoChat)
+	if Action.KeyCode == Enum.KeyCode[LookVectorSpeedKey] then
+		LookVectorSprinting = true
+	end
+	
+	if NoChat then
+		return nil
+	end
+
+end)
+			
+UserInputService.InputEnded:Connect(function(ActionEnd)
+	if ActionEnd.KeyCode == Enum.KeyCode[LookVectorSpeedKey] then
+		LookVectorSprinting = false
+	end
 end)
 
 rejoinBUTTON_misc.MouseButton1Click:Connect(function()
@@ -282,3 +411,10 @@ shutdownBUTTON_misc.MouseButton1Click:Connect(function()
 	task.wait(1)
 	game:shutdown()
 end)
+
+chatBUTTON_misc.MouseButton1Click:Connect(function()
+	chatBUTTON_misc.Text = "X"
+	task.wait(1)
+	Chat()
+end)
+	
