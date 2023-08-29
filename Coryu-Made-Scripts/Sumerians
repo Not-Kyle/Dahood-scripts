@@ -1,4 +1,4 @@
---sumerians
+--sumerian
 
 getgenv().Players = game:GetService'Players';
 getgenv().LocalPlayer = Players.LocalPlayer;
@@ -6,11 +6,14 @@ getgenv().Mouse = LocalPlayer:GetMouse();
 getgenv().Teleport = game:GetService'TeleportService'
 getgenv().RunService = game:GetService'RunService'
 getgenv().UserInputService = game:GetService'UserInputService'
+getgenv().UserNotifications = function(title, text, time) game.StarterGui:SetCore("SendNotification", {Title = title; Text = text; Icon = 'rbxassetid://13941412659'; Duration = time;}) end
 
 -- | Booleans | --
 
-local LookVectorSprint = true
+local LookVectorSprint = false
 local LookVectorSprinting = false
+local Sprint = false
+local SprintGui = false;
 
 -- | Ints | --
 
@@ -20,353 +23,580 @@ local SprintSpeedLookVector = 170;
 
 local LookVectorSpeedKey = 'LeftShift'
 
+-- | Methods | --
+
+local SprintMethod;
+
+-- | Sounds | --
+
+local UserJoins = 'rbxassetid://1862048961';
+
 -- | Gui | --
 
-local yas = Instance.new("ScreenGui")
-yas.Name = "yas"
-yas.Parent = LocalPlayer:WaitForChild("PlayerGui")
-yas.ResetOnSpawn = false
+local Yas = Instance.new("ScreenGui")
+Yas.Name = "Yas"
+Yas.Parent = LocalPlayer:WaitForChild("PlayerGui")
+Yas.ResetOnSpawn = false
 
-local BACKFRAMETOSTATUS = Instance.new("ImageLabel")
-BACKFRAMETOSTATUS.Name = "BACKFRAMETOSTATUS"
-BACKFRAMETOSTATUS.Parent = yas
-BACKFRAMETOSTATUS.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-BACKFRAMETOSTATUS.BackgroundTransparency = 1.000
-BACKFRAMETOSTATUS.Position = UDim2.new(0.2, 0, 0.803837836, 0)
-BACKFRAMETOSTATUS.Size = UDim2.new(0, 233, 0, 195)
-BACKFRAMETOSTATUS.Image = "rbxassetid://3570695787"
-BACKFRAMETOSTATUS.ImageColor3 = Color3.fromRGB(0, 0, 0)
-BACKFRAMETOSTATUS.ScaleType = Enum.ScaleType.Slice
-BACKFRAMETOSTATUS.SliceCenter = Rect.new(100, 100, 100, 100)
-BACKFRAMETOSTATUS.SliceScale = 0.040
+local BackFrameToStatusFrame = Instance.new("ImageLabel")
+BackFrameToStatusFrame.Name = "BackFrameToStatusFrame"
+BackFrameToStatusFrame.Parent = Yas
+BackFrameToStatusFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BackFrameToStatusFrame.BackgroundTransparency = 1.000
+BackFrameToStatusFrame.Position = UDim2.new(0.2, 0, 0.803837836, 0)
+BackFrameToStatusFrame.Size = UDim2.new(0, 233, 0, 195)
+BackFrameToStatusFrame.Image = "rbxassetid://3570695787"
+BackFrameToStatusFrame.ImageColor3 = Color3.fromRGB(0, 0, 0)
+BackFrameToStatusFrame.ScaleType = Enum.ScaleType.Slice
+BackFrameToStatusFrame.SliceCenter = Rect.new(100, 100, 100, 100)
+BackFrameToStatusFrame.SliceScale = 0.040
 
-local statusframe = Instance.new("Frame")
-statusframe.Name = "statusframe"
-statusframe.Parent = BACKFRAMETOSTATUS
-statusframe.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-statusframe.BorderColor3 = Color3.fromRGB(85, 0, 255)
-statusframe.BorderSizePixel = 2
-statusframe.Position = UDim2.new(0.0257510729, 0, 0.0307692308, 0)
-statusframe.Size = UDim2.new(0, 221, 0, 189)
+local StatusFrame = Instance.new("Frame")
+StatusFrame.Name = "StatusFrame"
+StatusFrame.Parent = BackFrameToStatusFrame
+StatusFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+StatusFrame.BorderColor3 = Color3.fromRGB(85, 0, 255)
+StatusFrame.BorderSizePixel = 2
+StatusFrame.Position = UDim2.new(0.0257510729, 0, 0.0307692308, 0)
+StatusFrame.Size = UDim2.new(0, 221, 0, 189)
 
-local gui = Instance.new("ImageLabel")
-gui.Name = "gui"
-gui.Parent = yas
-gui.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-gui.BackgroundTransparency = 1.000
-gui.Position = UDim2.new(0.642720938, 0, 0.0804721043, 0)
-gui.Size = UDim2.new(0, 475, 0, 563)
-gui.Image = "rbxassetid://3570695787"
-gui.ImageColor3 = Color3.fromRGB(0, 0, 0)
-gui.ScaleType = Enum.ScaleType.Slice
-gui.SliceCenter = Rect.new(100, 100, 100, 100)
-gui.SliceScale = 0.040
-gui.ZIndex = 1
-gui.Active = true
-gui.Draggable = true
+local Gui = Instance.new("ImageLabel")
+Gui.Name = "gui"
+Gui.Parent = Yas
+Gui.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Gui.BackgroundTransparency = 1.000
+Gui.Position = UDim2.new(0.642720938, 0, 0.0804721043, 0)
+Gui.Size = UDim2.new(0, 475, 0, 563)
+Gui.Image = "rbxassetid://3570695787"
+Gui.ImageColor3 = Color3.fromRGB(0, 0, 0)
+Gui.ScaleType = Enum.ScaleType.Slice
+Gui.SliceCenter = Rect.new(100, 100, 100, 100)
+Gui.SliceScale = 0.040
+Gui.ZIndex = 1
+Gui.Active = true
+Gui.Draggable = true
 
-local frontgui = Instance.new("Frame")
-frontgui.Name = "frontgui"
-frontgui.Parent = gui
-frontgui.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-frontgui.BorderColor3 = Color3.fromRGB(85, 0, 255)
-frontgui.BorderSizePixel = 2
-frontgui.Position = UDim2.new(0.0107457852, 0, 0.00946034119, 0)
-frontgui.Size = UDim2.new(0, 464, 0, 552)
-frontgui.ZIndex = 1
+local FrontGui = Instance.new("Frame")
+FrontGui.Name = "FrontGui"
+FrontGui.Parent = Gui
+FrontGui.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+FrontGui.BorderColor3 = Color3.fromRGB(85, 0, 255)
+FrontGui.BorderSizePixel = 2
+FrontGui.Position = UDim2.new(0.0107457852, 0, 0.00946034119, 0)
+FrontGui.Size = UDim2.new(0, 464, 0, 552)
+FrontGui.ZIndex = 1
 
-local line = Instance.new("Frame")
-line.Name = "line"
-line.Parent = frontgui
-line.BackgroundColor3 = Color3.fromRGB(85, 0, 255)
-line.BorderColor3 = Color3.fromRGB(0, 0, 0)
-line.BorderSizePixel = 0
-line.Position = UDim2.new(0, 0, 0.954710126, 0)
-line.Size = UDim2.new(0, 464, 0, 2)
-line.ZIndex = 1
+local Line = Instance.new("Frame")
+Line.Name = "Line"
+Line.Parent = FrontGui
+Line.BackgroundColor3 = Color3.fromRGB(85, 0, 255)
+Line.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Line.BorderSizePixel = 0
+Line.Position = UDim2.new(0, 0, 0.954710126, 0)
+Line.Size = UDim2.new(0, 464, 0, 2)
+Line.ZIndex = 1
 
-local title = Instance.new("TextLabel")
-title.Name = "title"
-title.Parent = frontgui
-title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-title.BackgroundTransparency = 1.000
-title.BorderColor3 = Color3.fromRGB(0, 0, 0)
-title.BorderSizePixel = 0
-title.Position = UDim2.new(0.721, 0, 0.954710126, 0)
-title.Size = UDim2.new(0, 68, 0, 25)
-title.ZIndex = 1
-title.Font = Enum.Font.Highway
-title.Text = "Sumerian - Made By Coryu"
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.TextSize = 17.000
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Parent = FrontGui
+Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Title.BackgroundTransparency = 1.000
+Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Title.BorderSizePixel = 0
+Title.Position = UDim2.new(0.721, 0, 0.954710126, 0)
+Title.Size = UDim2.new(0, 68, 0, 25)
+Title.ZIndex = 1
+Title.Font = Enum.Font.Highway
+Title.Text = "Sumerian - Made By Coryu"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 17.000
 
-local combatBUTTON = Instance.new("TextButton")
-combatBUTTON.Name = "combatBUTTON"
-combatBUTTON.Parent = frontgui
-combatBUTTON.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-combatBUTTON.BackgroundTransparency = 1.000
-combatBUTTON.BorderColor3 = Color3.fromRGB(0, 0, 0)
-combatBUTTON.BorderSizePixel = 0
-combatBUTTON.Position = UDim2.new(0, 0, 0.954710126, 0)
-combatBUTTON.Size = UDim2.new(0, 61, 0, 25)
-combatBUTTON.ZIndex = 1
-combatBUTTON.Font = Enum.Font.Highway
-combatBUTTON.Text = "Combat"
-combatBUTTON.TextColor3 = Color3.fromRGB(255, 255, 255)
-combatBUTTON.TextSize = 17.000
+local CombatButton = Instance.new("TextButton")
+CombatButton.Name = "CombatButton"
+CombatButton.Parent = FrontGui
+CombatButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CombatButton.BackgroundTransparency = 1.000
+CombatButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CombatButton.BorderSizePixel = 0
+CombatButton.Position = UDim2.new(0, 0, 0.954710126, 0)
+CombatButton.Size = UDim2.new(0, 61, 0, 25)
+CombatButton.ZIndex = 1
+CombatButton.Font = Enum.Font.Highway
+CombatButton.Text = "Combat"
+CombatButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CombatButton.TextSize = 17.000
 
-local miscBUTTON = Instance.new("TextButton")
-miscBUTTON.Name = "miscBUTTON"
-miscBUTTON.Parent = frontgui
-miscBUTTON.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-miscBUTTON.BackgroundTransparency = 1.000
-miscBUTTON.BorderColor3 = Color3.fromRGB(0, 0, 0)
-miscBUTTON.BorderSizePixel = 0
-miscBUTTON.Position = UDim2.new(0.118534483, 0, 0.954710126, 0)
-miscBUTTON.Size = UDim2.new(0, 48, 0, 25)
-miscBUTTON.Font = Enum.Font.Highway
-miscBUTTON.Text = "Misc"
-miscBUTTON.TextColor3 = Color3.fromRGB(255, 255, 255)
-miscBUTTON.TextSize = 17.000
+local MiscellaneousButton = Instance.new("TextButton")
+MiscellaneousButton.Name = "MiscellaneousButton"
+MiscellaneousButton.Parent = FrontGui
+MiscellaneousButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MiscellaneousButton.BackgroundTransparency = 1.000
+MiscellaneousButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+MiscellaneousButton.BorderSizePixel = 0
+MiscellaneousButton.Position = UDim2.new(0.118534483, 0, 0.954710126, 0)
+MiscellaneousButton.Size = UDim2.new(0, 48, 0, 25)
+MiscellaneousButton.Font = Enum.Font.Highway
+MiscellaneousButton.Text = "Misc"
+MiscellaneousButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MiscellaneousButton.TextSize = 17.000
 
-local bfC = Instance.new("Frame")
-bfC.Name = "bfC"
-bfC.Parent = combatBUTTON
-bfC.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-bfC.BackgroundTransparency = 1.000
-bfC.BorderColor3 = Color3.fromRGB(0, 0, 0)
-bfC.BorderSizePixel = 0
-bfC.Position = UDim2.new(0, 0, -21.0799999, 0)
-bfC.Size = UDim2.new(0, 464, 0, 527)
-bfC.ZIndex = 1
-bfC.Visible = true
+local BackFrameCombat = Instance.new("Frame")
+BackFrameCombat.Name = "BackFrameCombat"
+BackFrameCombat.Parent = CombatButton
+BackFrameCombat.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BackFrameCombat.BackgroundTransparency = 1.000
+BackFrameCombat.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BackFrameCombat.BorderSizePixel = 0
+BackFrameCombat.Position = UDim2.new(0, 0, -21.0799999, 0)
+BackFrameCombat.Size = UDim2.new(0, 464, 0, 527)
+BackFrameCombat.ZIndex = 1
+BackFrameCombat.Visible = true
 
-local bfM = Instance.new("Frame")
-bfM.Name = "bfM"
-bfM.Parent = miscBUTTON
-bfM.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-bfM.BackgroundTransparency = 1.000
-bfM.BorderColor3 = Color3.fromRGB(0, 0, 0)
-bfM.BorderSizePixel = 0
-bfM.Position = UDim2.new(-1.14583337, 0, -21.0799999, 0)
-bfM.Size = UDim2.new(0, 464, 0, 527)
-bfM.Visible = false
+local BackFrameMisc = Instance.new("Frame")
+BackFrameMisc.Name = "BackFrameMisc"
+BackFrameMisc.Parent = MiscellaneousButton
+BackFrameMisc.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BackFrameMisc.BackgroundTransparency = 1.000
+BackFrameMisc.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BackFrameMisc.BorderSizePixel = 0
+BackFrameMisc.Position = UDim2.new(-1.14583337, 0, -21.0799999, 0)
+BackFrameMisc.Size = UDim2.new(0, 464, 0, 527)
+BackFrameMisc.Visible = false
 
-local sf1M = Instance.new("ScrollingFrame")
-sf1M.Name = "sf1M"
-sf1M.Parent = bfM
-sf1M.Active = true
-sf1M.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-sf1M.BackgroundTransparency = 1.000
-sf1M.BorderColor3 = Color3.fromRGB(0, 0, 0)
-sf1M.BorderSizePixel = 0
-sf1M.Size = UDim2.new(0, 232, 0, 527)
-sf1M.ScrollBarThickness = 4
-sf1M.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
+local ScrollFrameOneMisc = Instance.new("ScrollingFrame")
+ScrollFrameOneMisc.Name = "ScrollFrameOneMisc"
+ScrollFrameOneMisc.Parent = BackFrameMisc
+ScrollFrameOneMisc.Active = true
+ScrollFrameOneMisc.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScrollFrameOneMisc.BackgroundTransparency = 1.000
+ScrollFrameOneMisc.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScrollFrameOneMisc.BorderSizePixel = 0
+ScrollFrameOneMisc.Size = UDim2.new(0, 232, 0, 527)
+ScrollFrameOneMisc.ScrollBarThickness = 4
+ScrollFrameOneMisc.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
 
-local sf1C = Instance.new("ScrollingFrame")
-sf1C.Name = "sf1C"
-sf1C.Parent = bfC
-sf1C.Active = true
-sf1C.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-sf1C.BackgroundTransparency = 1.000
-sf1C.BorderColor3 = Color3.fromRGB(0, 0, 0)
-sf1C.BorderSizePixel = 0
-sf1C.Size = UDim2.new(0, 232, 0, 527)
-sf1C.ZIndex = 1
-sf1C.ScrollBarThickness = 4
-sf1C.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
+local ScrollFrameOneCombat = Instance.new("ScrollingFrame")
+ScrollFrameOneCombat.Name = "ScrollFrameOneCombat"
+ScrollFrameOneCombat.Parent = BackFrameCombat
+ScrollFrameOneCombat.Active = true
+ScrollFrameOneCombat.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScrollFrameOneCombat.BackgroundTransparency = 1.000
+ScrollFrameOneCombat.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScrollFrameOneCombat.BorderSizePixel = 0
+ScrollFrameOneCombat.Size = UDim2.new(0, 232, 0, 527)
+ScrollFrameOneCombat.ZIndex = 1
+ScrollFrameOneCombat.ScrollBarThickness = 4
+ScrollFrameOneCombat.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
 
-local miscframe_sf1M = Instance.new("Frame")
-miscframe_sf1M.Name = "miscframe_sf1M"
-miscframe_sf1M.Parent = sf1M
-miscframe_sf1M.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-miscframe_sf1M.BorderColor3 = Color3.fromRGB(0, 0, 0)
-miscframe_sf1M.BorderSizePixel = 0
-miscframe_sf1M.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
-miscframe_sf1M.Size = UDim2.new(0, 215, 0, 80)
+local MiscellaneousScrollFrameOne = Instance.new("Frame")
+MiscellaneousScrollFrameOne.Name = "MiscellaneousScrollFrameOne"
+MiscellaneousScrollFrameOne.Parent = ScrollFrameOneMisc
+MiscellaneousScrollFrameOne.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MiscellaneousScrollFrameOne.BorderColor3 = Color3.fromRGB(0, 0, 0)
+MiscellaneousScrollFrameOne.BorderSizePixel = 0
+MiscellaneousScrollFrameOne.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
+MiscellaneousScrollFrameOne.Size = UDim2.new(0, 215, 0, 80)
 
-local targetframe_sf1c = Instance.new("Frame")
-targetframe_sf1c.Name = "targetframe_sf1c"
-targetframe_sf1c.Parent = sf1C
-targetframe_sf1c.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-targetframe_sf1c.BorderColor3 = Color3.fromRGB(0, 0, 0)
-targetframe_sf1c.BorderSizePixel = 0
-targetframe_sf1c.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
-targetframe_sf1c.Size = UDim2.new(0, 215, 0, 337)
-targetframe_sf1c.ZIndex = 1
+local TargetFrame_Combat = Instance.new("Frame")
+TargetFrame_Combat.Name = "TargetFrame_Combat"
+TargetFrame_Combat.Parent = ScrollFrameOneCombat
+TargetFrame_Combat.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+TargetFrame_Combat.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TargetFrame_Combat.BorderSizePixel = 0
+TargetFrame_Combat.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
+TargetFrame_Combat.Size = UDim2.new(0, 215, 0, 337)
+TargetFrame_Combat.ZIndex = 1
 
-local miscTITLE = Instance.new("TextLabel")
-miscTITLE.Name = "miscTITLE"
-miscTITLE.Parent = miscframe_sf1M
-miscTITLE.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-miscTITLE.BackgroundTransparency = 1.000
-miscTITLE.BorderColor3 = Color3.fromRGB(0, 0, 0)
-miscTITLE.BorderSizePixel = 0
-miscTITLE.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
-miscTITLE.Size = UDim2.new(0, 40, 0, 19)
-miscTITLE.Font = Enum.Font.Highway
-miscTITLE.Text = "Game"
-miscTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
-miscTITLE.TextSize = 13.000
-miscTITLE.TextXAlignment = Enum.TextXAlignment.Left
+local MiscellaneousTitle = Instance.new("TextLabel")
+MiscellaneousTitle.Name = "MiscellaneousTitle"
+MiscellaneousTitle.Parent = MiscellaneousScrollFrameOne
+MiscellaneousTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MiscellaneousTitle.BackgroundTransparency = 1.000
+MiscellaneousTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+MiscellaneousTitle.BorderSizePixel = 0
+MiscellaneousTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+MiscellaneousTitle.Size = UDim2.new(0, 40, 0, 19)
+MiscellaneousTitle.Font = Enum.Font.Highway
+MiscellaneousTitle.Text = "Game"
+MiscellaneousTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+MiscellaneousTitle.TextSize = 13.000
+MiscellaneousTitle.TextXAlignment = Enum.TextXAlignment.Left
 
-local targetTITLE = Instance.new("TextLabel")
-targetTITLE.Name = "targetTITLE"
-targetTITLE.Parent = targetframe_sf1c
-targetTITLE.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-targetTITLE.BackgroundTransparency = 1.000
-targetTITLE.BorderColor3 = Color3.fromRGB(0, 0, 0)
-targetTITLE.BorderSizePixel = 0
-targetTITLE.Position = UDim2.new(-0.0349246003, 0, -0.000779511291, 0)
-targetTITLE.Size = UDim2.new(0, 61, 0, 19)
-targetTITLE.ZIndex = 1
-targetTITLE.Font = Enum.Font.Highway
-targetTITLE.Text = "Targeting"
-targetTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
-targetTITLE.TextSize = 13.000
+local TargetTitle = Instance.new("TextLabel")
+TargetTitle.Name = "TargetTitle"
+TargetTitle.Parent = TargetFrame_Combat
+TargetTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TargetTitle.BackgroundTransparency = 1.000
+TargetTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TargetTitle.BorderSizePixel = 0
+TargetTitle.Position = UDim2.new(-0.0349246003, 0, -0.000779511291, 0)
+TargetTitle.Size = UDim2.new(0, 61, 0, 19)
+TargetTitle.ZIndex = 1
+TargetTitle.Font = Enum.Font.Highway
+TargetTitle.Text = "Targeting"
+TargetTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+TargetTitle.TextSize = 13.000
 
-local rejoinBUTTON_misc = Instance.new("TextButton")
-rejoinBUTTON_misc.Name = "rejoinBUTTON_misc"
-rejoinBUTTON_misc.Parent = miscframe_sf1M
-rejoinBUTTON_misc.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-rejoinBUTTON_misc.BorderColor3 = Color3.fromRGB(255, 255, 255)
-rejoinBUTTON_misc.Position = UDim2.new(-0.00465116277, 0, 0.33, 0)
-rejoinBUTTON_misc.Size = UDim2.new(0, 13, 0, 13)
-rejoinBUTTON_misc.Font = Enum.Font.Highway
-rejoinBUTTON_misc.Text = ""
-rejoinBUTTON_misc.TextColor3 = Color3.fromRGB(255, 255, 255)
-rejoinBUTTON_misc.TextSize = 14.000
+local RejoinButton = Instance.new("TextButton")
+RejoinButton.Name = "RejoinButton"
+RejoinButton.Parent = MiscellaneousScrollFrameOne
+RejoinButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+RejoinButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+RejoinButton.Position = UDim2.new(-0.00465116277, 0, 0.33, 0)
+RejoinButton.Size = UDim2.new(0, 13, 0, 13)
+RejoinButton.Font = Enum.Font.Highway
+RejoinButton.Text = ""
+RejoinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RejoinButton.TextSize = 14.000
 
-local rejoinTEXT = Instance.new("TextLabel")
-rejoinTEXT.Name = "rejoinTEXT"
-rejoinTEXT.Parent = rejoinBUTTON_misc
-rejoinTEXT.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-rejoinTEXT.BackgroundTransparency = 1.000
-rejoinTEXT.BorderColor3 = Color3.fromRGB(0, 0, 0)
-rejoinTEXT.BorderSizePixel = 0
-rejoinTEXT.Position = UDim2.new(1.15384614, 0, 0, 0)
-rejoinTEXT.Size = UDim2.new(0, 52, 0, 13)
-rejoinTEXT.Font = Enum.Font.Highway
-rejoinTEXT.Text = " - Rejoin"
-rejoinTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
-rejoinTEXT.TextSize = 14.000
-rejoinTEXT.TextXAlignment = Enum.TextXAlignment.Left
+local RejoinText = Instance.new("TextLabel")
+RejoinText.Name = "RejoinText"
+RejoinText.Parent = RejoinButton
+RejoinText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+RejoinText.BackgroundTransparency = 1.000
+RejoinText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+RejoinText.BorderSizePixel = 0
+RejoinText.Position = UDim2.new(1.15384614, 0, 0, 0)
+RejoinText.Size = UDim2.new(0, 52, 0, 13)
+RejoinText.Font = Enum.Font.Highway
+RejoinText.Text = " - Rejoin"
+RejoinText.TextColor3 = Color3.fromRGB(255, 255, 255)
+RejoinText.TextSize = 14.000
+RejoinText.TextXAlignment = Enum.TextXAlignment.Left
 
-local shutdownBUTTON_misc = Instance.new("TextButton")
-shutdownBUTTON_misc.Name = "shutdownBUTTON_misc"
-shutdownBUTTON_misc.Parent = miscframe_sf1M
-shutdownBUTTON_misc.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-shutdownBUTTON_misc.BorderColor3 = Color3.fromRGB(255, 255, 255)
-shutdownBUTTON_misc.Position = UDim2.new(-0.00465116277, 0, 0.63, 0)
-shutdownBUTTON_misc.Size = UDim2.new(0, 13, 0, 13)
-shutdownBUTTON_misc.Font = Enum.Font.Highway
-shutdownBUTTON_misc.Text = ""
-shutdownBUTTON_misc.TextColor3 = Color3.fromRGB(255, 255, 255)
-shutdownBUTTON_misc.TextSize = 14.000
+local ShudownButton = Instance.new("TextButton")
+ShudownButton.Name = "ShudownButton"
+ShudownButton.Parent = MiscellaneousScrollFrameOne
+ShudownButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ShudownButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ShudownButton.Position = UDim2.new(-0.00465116277, 0, 0.63, 0)
+ShudownButton.Size = UDim2.new(0, 13, 0, 13)
+ShudownButton.Font = Enum.Font.Highway
+ShudownButton.Text = ""
+ShudownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShudownButton.TextSize = 14.000
 
-local shutdownTEXT = Instance.new("TextLabel")
-shutdownTEXT.Name = "shutdownTEXT"
-shutdownTEXT.Parent = shutdownBUTTON_misc
-shutdownTEXT.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-shutdownTEXT.BackgroundTransparency = 1.000
-shutdownTEXT.BorderColor3 = Color3.fromRGB(0, 0, 0)
-shutdownTEXT.BorderSizePixel = 0
-shutdownTEXT.Position = UDim2.new(1.15384614, 0, 0, 0)
-shutdownTEXT.Size = UDim2.new(0, 52, 0, 13)
-shutdownTEXT.Font = Enum.Font.Highway
-shutdownTEXT.Text = " - Shutdown"
-shutdownTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
-shutdownTEXT.TextSize = 14.000
-shutdownTEXT.TextXAlignment = Enum.TextXAlignment.Left
+local ShutdownText = Instance.new("TextLabel")
+ShutdownText.Name = "ShutdownText"
+ShutdownText.Parent = ShudownButton
+ShutdownText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ShutdownText.BackgroundTransparency = 1.000
+ShutdownText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ShutdownText.BorderSizePixel = 0
+ShutdownText.Position = UDim2.new(1.15384614, 0, 0, 0)
+ShutdownText.Size = UDim2.new(0, 52, 0, 13)
+ShutdownText.Font = Enum.Font.Highway
+ShutdownText.Text = " - Shutdown"
+ShutdownText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShutdownText.TextSize = 14.000
+ShutdownText.TextXAlignment = Enum.TextXAlignment.Left
 
-local ui_sf1M = Instance.new("Frame")
-ui_sf1M.Name = "ui_sf1M"
-ui_sf1M.Parent = sf1M
-ui_sf1M.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-ui_sf1M.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ui_sf1M.BorderSizePixel = 0
-ui_sf1M.Position = UDim2.new(0.0299999993, 0, 0.0900000036, 0)
-ui_sf1M.Size = UDim2.new(0, 215, 0, 200)
+local UiScrollFrame = Instance.new("Frame")
+UiScrollFrame.Name = "UiScrollFrame"
+UiScrollFrame.Parent = ScrollFrameOneMisc
+UiScrollFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+UiScrollFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+UiScrollFrame.BorderSizePixel = 0
+UiScrollFrame.Position = UDim2.new(0.0299999993, 0, 0.0900000036, 0)
+UiScrollFrame.Size = UDim2.new(0, 215, 0, 200)
 
-local uiTITLE = Instance.new("TextLabel")
-uiTITLE.Name = "uiTITLE"
-uiTITLE.Parent = ui_sf1M
-uiTITLE.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-uiTITLE.BackgroundTransparency = 1.000
-uiTITLE.BorderColor3 = Color3.fromRGB(0, 0, 0)
-uiTITLE.BorderSizePixel = 0
-uiTITLE.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
-uiTITLE.Size = UDim2.new(0, 61, 0, 19)
-uiTITLE.Font = Enum.Font.Highway
-uiTITLE.Text = "User Interface"
-uiTITLE.TextColor3 = Color3.fromRGB(255, 255, 255)
-uiTITLE.TextSize = 13.000
-uiTITLE.TextXAlignment = Enum.TextXAlignment.Left
+local UserInterfaceTitle = Instance.new("TextLabel")
+UserInterfaceTitle.Name = "UserInterfaceTitle"
+UserInterfaceTitle.Parent = UiScrollFrame
+UserInterfaceTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+UserInterfaceTitle.BackgroundTransparency = 1.000
+UserInterfaceTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+UserInterfaceTitle.BorderSizePixel = 0
+UserInterfaceTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+UserInterfaceTitle.Size = UDim2.new(0, 61, 0, 19)
+UserInterfaceTitle.Font = Enum.Font.Highway
+UserInterfaceTitle.Text = "User Interface"
+UserInterfaceTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+UserInterfaceTitle.TextSize = 13.000
+UserInterfaceTitle.TextXAlignment = Enum.TextXAlignment.Left
 
-local chatBUTTON_misc = Instance.new("TextButton")
-chatBUTTON_misc.Name = "chatBUTTON_misc"
-chatBUTTON_misc.Parent = ui_sf1M
-chatBUTTON_misc.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-chatBUTTON_misc.BorderColor3 = Color3.fromRGB(255, 255, 255)
-chatBUTTON_misc.Position = UDim2.new(0.0139534883, 0, 0.12715134, 0)
-chatBUTTON_misc.Size = UDim2.new(0, 13, 0, 13)
-chatBUTTON_misc.Font = Enum.Font.Highway
-chatBUTTON_misc.Text = ""
-chatBUTTON_misc.TextColor3 = Color3.fromRGB(255, 255, 255)
-chatBUTTON_misc.TextSize = 14.000
+local ChatButton = Instance.new("TextButton")
+ChatButton.Name = "ChatButton"
+ChatButton.Parent = UiScrollFrame
+ChatButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ChatButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ChatButton.Position = UDim2.new(0.0139534883, 0, 0.12715134, 0)
+ChatButton.Size = UDim2.new(0, 13, 0, 13)
+ChatButton.Font = Enum.Font.Highway
+ChatButton.Text = ""
+ChatButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ChatButton.TextSize = 14.000
 
-local chatTEXT = Instance.new("TextLabel")
-chatTEXT.Name = "chatTEXT"
-chatTEXT.Parent = chatBUTTON_misc
-chatTEXT.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-chatTEXT.BackgroundTransparency = 1.000
-chatTEXT.BorderColor3 = Color3.fromRGB(0, 0, 0)
-chatTEXT.BorderSizePixel = 0
-chatTEXT.Position = UDim2.new(1.15384614, 0, 0, 0)
-chatTEXT.Size = UDim2.new(0, 52, 0, 13)
-chatTEXT.Font = Enum.Font.Highway
-chatTEXT.Text = " - Chat"
-chatTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
-chatTEXT.TextSize = 14.000
-chatTEXT.TextXAlignment = Enum.TextXAlignment.Left
+local ChatText = Instance.new("TextLabel")
+ChatText.Name = "ChatText"
+ChatText.Parent = ChatButton
+ChatText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ChatText.BackgroundTransparency = 1.000
+ChatText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ChatText.BorderSizePixel = 0
+ChatText.Position = UDim2.new(1.15384614, 0, 0, 0)
+ChatText.Size = UDim2.new(0, 52, 0, 13)
+ChatText.Font = Enum.Font.Highway
+ChatText.Text = " - Chat"
+ChatText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ChatText.TextSize = 14.000
+ChatText.TextXAlignment = Enum.TextXAlignment.Left
 
-local shutdownBUTTON_misc = Instance.new("TextButton")
-shutdownBUTTON_misc.Name = "shutdownBUTTON_misc"
-shutdownBUTTON_misc.Parent = ui_sf1M
-shutdownBUTTON_misc.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-shutdownBUTTON_misc.BorderColor3 = Color3.fromRGB(255, 255, 255)
-shutdownBUTTON_misc.Position = UDim2.new(0.0139534883, 0, 0.238998562, 0)
-shutdownBUTTON_misc.Size = UDim2.new(0, 13, 0, 13)
-shutdownBUTTON_misc.Visible = false
-shutdownBUTTON_misc.Font = Enum.Font.Highway
-shutdownBUTTON_misc.Text = ""
-shutdownBUTTON_misc.TextColor3 = Color3.fromRGB(255, 255, 255)
-shutdownBUTTON_misc.TextSize = 14.000
+local ShudownButton = Instance.new("TextButton")
+ShudownButton.Name = "ShudownButton"
+ShudownButton.Parent = UiScrollFrame
+ShudownButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ShudownButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ShudownButton.Position = UDim2.new(0.0139534883, 0, 0.238998562, 0)
+ShudownButton.Size = UDim2.new(0, 13, 0, 13)
+ShudownButton.Visible = false
+ShudownButton.Font = Enum.Font.Highway
+ShudownButton.Text = ""
+ShudownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShudownButton.TextSize = 14.000
 
-local shutdownTEXT = Instance.new("TextLabel")
-shutdownTEXT.Name = "shutdownTEXT"
-shutdownTEXT.Parent = shutdownBUTTON_misc
-shutdownTEXT.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-shutdownTEXT.BackgroundTransparency = 1.000
-shutdownTEXT.BorderColor3 = Color3.fromRGB(0, 0, 0)
-shutdownTEXT.BorderSizePixel = 0
-shutdownTEXT.Position = UDim2.new(1.15384614, 0, 0, 0)
-shutdownTEXT.Size = UDim2.new(0, 52, 0, 13)
-shutdownTEXT.Font = Enum.Font.Highway
-shutdownTEXT.Text = " - Shutdown"
-shutdownTEXT.TextColor3 = Color3.fromRGB(255, 255, 255)
-shutdownTEXT.TextSize = 14.000
-shutdownTEXT.TextXAlignment = Enum.TextXAlignment.Left
+local ShutdownText = Instance.new("TextLabel")
+ShutdownText.Name = "ShutdownText"
+ShutdownText.Parent = ShudownButton
+ShutdownText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ShutdownText.BackgroundTransparency = 1.000
+ShutdownText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ShutdownText.BorderSizePixel = 0
+ShutdownText.Position = UDim2.new(1.15384614, 0, 0, 0)
+ShutdownText.Size = UDim2.new(0, 52, 0, 13)
+ShutdownText.Font = Enum.Font.Highway
+ShutdownText.Text = " - Shutdown"
+ShutdownText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShutdownText.TextSize = 14.000
+ShutdownText.TextXAlignment = Enum.TextXAlignment.Left
 
-combatBUTTON.MouseButton1Click:Connect(function()
-    bfC.Visible = not bfC.Visible
-    bfM.Visible = false
+local MovementButton = Instance.new("TextButton")
+MovementButton.Name = "MovementButton"
+MovementButton.Parent = FrontGui
+MovementButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MovementButton.BackgroundTransparency = 1.000
+MovementButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+MovementButton.BorderSizePixel = 0
+MovementButton.Position = UDim2.new(0.206896558, 0, 0.954710126, 0)
+MovementButton.Size = UDim2.new(0, 76, 0, 25)
+MovementButton.Font = Enum.Font.Highway
+MovementButton.Text = "Movement"
+MovementButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MovementButton.TextSize = 17.000
+
+local BackFrameMovement = Instance.new("Frame")
+BackFrameMovement.Name = "BackFrameMovement"
+BackFrameMovement.Parent = MovementButton
+BackFrameMovement.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BackFrameMovement.BackgroundTransparency = 1.000
+BackFrameMovement.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BackFrameMovement.BorderSizePixel = 0
+BackFrameMovement.Position = UDim2.new(-1.27741277, 0, -21.0799999, 0)
+BackFrameMovement.Size = UDim2.new(0, 464, 0, 527)
+BackFrameMovement.Visible = false
+
+local ScrollFrameOneMovement = Instance.new("ScrollingFrame")
+ScrollFrameOneMovement.Name = "ScrollFrameOneMovement"
+ScrollFrameOneMovement.Parent = BackFrameMovement
+ScrollFrameOneMovement.Active = true
+ScrollFrameOneMovement.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScrollFrameOneMovement.BackgroundTransparency = 1.000
+ScrollFrameOneMovement.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScrollFrameOneMovement.BorderSizePixel = 0
+ScrollFrameOneMovement.Size = UDim2.new(0, 232, 0, 527)
+ScrollFrameOneMovement.ScrollBarThickness = 4
+ScrollFrameOneMovement.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
+
+local FirstFrame_Movement1 = Instance.new("Frame")
+FirstFrame_Movement1.Name = "FirstFrame_Movement1"
+FirstFrame_Movement1.Parent = ScrollFrameOneMovement
+FirstFrame_Movement1.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+FirstFrame_Movement1.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FirstFrame_Movement1.BorderSizePixel = 0
+FirstFrame_Movement1.Position = UDim2.new(0.0379999988, 0, 0.00999999978, 0)
+FirstFrame_Movement1.Size = UDim2.new(0, 215, 0, 141)
+
+local SprintTitle = Instance.new("TextLabel")
+SprintTitle.Name = "SprintTitle"
+SprintTitle.Parent = FirstFrame_Movement1
+SprintTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SprintTitle.BackgroundTransparency = 1.000
+SprintTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintTitle.BorderSizePixel = 0
+SprintTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+SprintTitle.Size = UDim2.new(0, 61, 0, 19)
+SprintTitle.Font = Enum.Font.Highway
+SprintTitle.Text = "Sprints"
+SprintTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintTitle.TextSize = 13.000
+SprintTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local SprintMethodsButton = Instance.new("TextButton")
+SprintMethodsButton.Name = "SprintMethodsButton"
+SprintMethodsButton.Parent = FirstFrame_Movement1
+SprintMethodsButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SprintMethodsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintMethodsButton.BorderSizePixel = 0
+SprintMethodsButton.Position = UDim2.new(0.0325581394, 0, 0.178324267, 0)
+SprintMethodsButton.Size = UDim2.new(0, 200, 0, 21)
+SprintMethodsButton.Font = Enum.Font.Highway
+SprintMethodsButton.Text = "LookVector"
+SprintMethodsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintMethodsButton.TextSize = 14.000
+
+local SprintMethodTexts = Instance.new("TextLabel")
+SprintMethodTexts.Name = "SprintMethodTexts"
+SprintMethodTexts.Parent = SprintMethodsButton
+SprintMethodTexts.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SprintMethodTexts.BackgroundTransparency = 1.000
+SprintMethodTexts.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintMethodTexts.BorderSizePixel = 0
+SprintMethodTexts.Position = UDim2.new(0.264999986, 0, -1.07843161, 0)
+SprintMethodTexts.Size = UDim2.new(0, 85, 0, 15)
+SprintMethodTexts.Font = Enum.Font.Highway
+SprintMethodTexts.Text = "Sprint Methods"
+SprintMethodTexts.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintMethodTexts.TextSize = 14.000
+
+local SprintMethodsButtonUpOrDown = Instance.new("TextLabel")
+SprintMethodsButtonUpOrDown.Name = "SprintMethodsButtonUpOrDown"
+SprintMethodsButtonUpOrDown.Parent = SprintMethodsButton
+SprintMethodsButtonUpOrDown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SprintMethodsButtonUpOrDown.BackgroundTransparency = 1.000
+SprintMethodsButtonUpOrDown.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintMethodsButtonUpOrDown.BorderSizePixel = 0
+SprintMethodsButtonUpOrDown.Position = UDim2.new(0.899999976, 0, 0, 0)
+SprintMethodsButtonUpOrDown.Size = UDim2.new(0, 20, 0, 21)
+SprintMethodsButtonUpOrDown.Font = Enum.Font.Highway
+SprintMethodsButtonUpOrDown.Text = "▼"
+SprintMethodsButtonUpOrDown.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintMethodsButtonUpOrDown.TextSize = 18.000
+
+local BackFrameSprintMethods = Instance.new("Frame")
+BackFrameSprintMethods.Name = "BackFrameSprintMethods"
+BackFrameSprintMethods.Parent = SprintMethodsButton
+BackFrameSprintMethods.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+BackFrameSprintMethods.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BackFrameSprintMethods.BorderSizePixel = 0
+BackFrameSprintMethods.Position = UDim2.new(0, 0, 1, 0)
+BackFrameSprintMethods.Size = UDim2.new(0, 200, 0, 107)
+BackFrameSprintMethods.Visible = false
+BackFrameSprintMethods.ZIndex = 2
+
+local LookVectorSprintButton = Instance.new("TextButton")
+LookVectorSprintButton.Name = "LookVectorSprintButton"
+LookVectorSprintButton.Parent = BackFrameSprintMethods
+LookVectorSprintButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+LookVectorSprintButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+LookVectorSprintButton.BorderSizePixel = 0
+LookVectorSprintButton.Position = UDim2.new(0.0280000009, 0, 0.0500000007, 0)
+LookVectorSprintButton.Size = UDim2.new(0, 188, 0, 21)
+LookVectorSprintButton.ZIndex = 2
+LookVectorSprintButton.Font = Enum.Font.Highway
+LookVectorSprintButton.Text = "LookVector"
+LookVectorSprintButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+LookVectorSprintButton.TextSize = 14.000
+
+local BlinkSprintButton = Instance.new("TextButton")
+BlinkSprintButton.Name = "BlinkSprintButton"
+BlinkSprintButton.Parent = BackFrameSprintMethods
+BlinkSprintButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+BlinkSprintButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BlinkSprintButton.BorderSizePixel = 0
+BlinkSprintButton.Position = UDim2.new(0.0280000009, 0, 0.300000012, 0)
+BlinkSprintButton.Size = UDim2.new(0, 188, 0, 21)
+BlinkSprintButton.ZIndex = 2
+BlinkSprintButton.Font = Enum.Font.Highway
+BlinkSprintButton.Text = "Blink"
+BlinkSprintButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+BlinkSprintButton.TextSize = 14.000
+
+local CFrameSprintButton = Instance.new("TextButton")
+CFrameSprintButton.Name = "CFrameSprintButton"
+CFrameSprintButton.Parent = BackFrameSprintMethods
+CFrameSprintButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+CFrameSprintButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CFrameSprintButton.BorderSizePixel = 0
+CFrameSprintButton.Position = UDim2.new(0.0280000009, 0, 0.550000012, 0)
+CFrameSprintButton.Size = UDim2.new(0, 188, 0, 21)
+CFrameSprintButton.ZIndex = 2
+CFrameSprintButton.Font = Enum.Font.Highway
+CFrameSprintButton.Text = "CFrame"
+CFrameSprintButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CFrameSprintButton.TextSize = 14.000
+
+local SprintSpeedBox = Instance.new("TextBox")
+SprintSpeedBox.Name = "SprintSpeedBox"
+SprintSpeedBox.Parent = FirstFrame_Movement1
+SprintSpeedBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SprintSpeedBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintSpeedBox.BorderSizePixel = 0
+SprintSpeedBox.Position = UDim2.new(0.0325581394, 0, 0.50425601, 0)
+SprintSpeedBox.Size = UDim2.new(0, 200, 0, 21)
+SprintSpeedBox.Font = Enum.Font.Highway
+SprintSpeedBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+SprintSpeedBox.PlaceholderText = "170"
+SprintSpeedBox.Text = ""
+SprintSpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintSpeedBox.TextSize = 14.000
+
+local SprintSpeedTitle = Instance.new("TextLabel")
+SprintSpeedTitle.Name = "SprintSpeedTitle"
+SprintSpeedTitle.Parent = SprintSpeedBox
+SprintSpeedTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SprintSpeedTitle.BackgroundTransparency = 1.000
+SprintSpeedTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintSpeedTitle.BorderSizePixel = 0
+SprintSpeedTitle.Position = UDim2.new(0, 0, -1.04999995, 0)
+SprintSpeedTitle.Size = UDim2.new(0, 200, 0, 21)
+SprintSpeedTitle.Font = Enum.Font.Highway
+SprintSpeedTitle.Text = "Sprint Speed"
+SprintSpeedTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintSpeedTitle.TextSize = 14.000
+
+local SprintButton = Instance.new("TextButton")
+SprintButton.Name = "SprintButton"
+SprintButton.Parent = FirstFrame_Movement1
+SprintButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+SprintButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+SprintButton.Position = UDim2.new(0.0744186044, 0, 0.797202885, 0)
+SprintButton.Size = UDim2.new(0, 13, 0, 13)
+SprintButton.Font = Enum.Font.Highway
+SprintButton.Text = ""
+SprintButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintButton.TextSize = 14.000
+
+local SprintText = Instance.new("TextLabel")
+SprintText.Name = "SprintText"
+SprintText.Parent = SprintButton
+SprintText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SprintText.BackgroundTransparency = 1.000
+SprintText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintText.BorderSizePixel = 0
+SprintText.Position = UDim2.new(1.15384614, 0, 0, 0)
+SprintText.Size = UDim2.new(0, 52, 0, 13)
+SprintText.Font = Enum.Font.Highway
+SprintText.Text = " - Sprint"
+SprintText.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintText.TextSize = 14.000
+SprintText.TextXAlignment = Enum.TextXAlignment.Left
+
+CombatButton.MouseButton1Click:Connect(function()
+    BackFrameCombat.Visible = not BackFrameCombat.Visible
+    BackFrameMisc.Visible = false
+	BackFrameMovement.Visible = false
 end)
 
-miscBUTTON.MouseButton1Click:Connect(function()
-    bfM.Visible = not bfM.Visible
-    bfC.Visible = false
+MiscellaneousButton.MouseButton1Click:Connect(function()
+    BackFrameMisc.Visible = not BackFrameMisc.Visible
+    BackFrameCombat.Visible = false
+	BackFrameMovement.Visible = false
+end)
+
+MovementButton.MouseButton1Click:Connect(function()
+	BackFrameMovement.Visible = not BackFrameMovement.Visible
+	BackFrameMisc.Visible = false
+	BackFrameCombat.Visible = false
 end)
 
 function Chat()
@@ -379,6 +609,18 @@ RunService.RenderStepped:Connect(function()
 	if LookVectorSprint then
 		if LookVectorSprinting then
 			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.Velocity = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame.lookVector * SprintSpeedLookVector
+		end
+	end
+end)
+
+RunService.RenderStepped:Connect(function()
+	if Sprint then
+		if SprintMethod == 'LookVector' then
+			LookVectorSprint = true
+		elseif SprintMethod == 'Blink' then
+			Blink = true
+		elseif SprintMethod == 'CFrame' then
+			CFrameSprint = true
 		end
 	end
 end)
@@ -400,21 +642,56 @@ UserInputService.InputEnded:Connect(function(ActionEnd)
 	end
 end)
 
-rejoinBUTTON_misc.MouseButton1Click:Connect(function()
-	rejoinBUTTON_misc.Text = "X"
+RejoinButton.MouseButton1Click:Connect(function()
+	RejoinButton.Text = "X"
 	task.wait(1)
 	Teleport:Teleport(game.PlaceId)
 end)
 
-shutdownBUTTON_misc.MouseButton1Click:Connect(function()
-	shutdownBUTTON_misc.Text = "X"
+ShudownButton.MouseButton1Click:Connect(function()
+	ShudownButton.Text = "X"
 	task.wait(1)
 	game:shutdown()
 end)
 
-chatBUTTON_misc.MouseButton1Click:Connect(function()
-	chatBUTTON_misc.Text = "X"
+ChatButton.MouseButton1Click:Connect(function()
+	ChatButton.Text = "X"
 	task.wait(1)
 	Chat()
 end)
-	
+
+SprintButton.MouseButton1Click:Connect(function()
+	Sprint = not Sprint
+	if Sprint then 
+		SprintButton.Text = "X"
+		task.wait(1)
+	elseif not Sprint then
+		SprintButton.Text = ""
+		LookVectorSprint = false
+	end
+end)
+
+LookVectorSprintButton.MouseButton1Click:Connect(function()
+	SprintMethod = 'LookVector'
+	SprintMethodsButton.Text = "LookVector"
+	task.wait(1)
+	LookVectorSprint = true
+end)
+
+SprintMethodsButton.MouseButton1Click:Connect(function()
+	SprintGui = not SprintGui
+	if SprintGui then
+		BackFrameSprintMethods:TweenPosition(UDim2.new(0, 0, 1, 0), "InOut", "Quart", 0.5, true, nil)
+		BackFrameSprintMethods.Visible = true
+	elseif not SprintGui then
+		BackFrameSprintMethods:TweenPosition(UDim2.new(0, 0, 0.05, 0), "InOut", "Quart", 0.5, true, nil)
+		task.wait(0.5)
+		BackFrameSprintMethods.Visible = false
+	end
+end)
+
+local Sound = Instance.new('Sound')
+Sound.Parent = game:GetService('Workspace')
+Sound.SoundId = UserJoins
+Sound.Playing = true
+
