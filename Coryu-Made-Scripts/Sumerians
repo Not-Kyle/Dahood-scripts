@@ -13,11 +13,14 @@ getgenv().UserNotifications = function(title, text, time) game.StarterGui:SetCor
 local LookVectorSprint = false
 local LookVectorSprinting = false
 local Sprint = false
-local SprintGui = false;
+local SprintGui = false
+local Blink = false
+local Blinking = false
 
 -- | Ints | --
 
 local SprintSpeedLookVector = 170;
+local BlinkSpeed = 8;
 
 -- | Hotkeys | --
 
@@ -606,11 +609,19 @@ function Chat()
 end
 
 RunService.RenderStepped:Connect(function()
+	
 	if LookVectorSprint then
 		if LookVectorSprinting then
 			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.Velocity = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame.lookVector * SprintSpeedLookVector
 		end
 	end
+	
+	if Blink then
+		if Blinking then
+			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame + Vector3.new(LocalPlayer.Character.Humanoid.MoveDirection.X * BlinkSpeed / 5, 0, LocalPlayer.Character.Humanoid.MoveDirection.Z * Blinkspeed / 5)
+		end
+	end
+			
 end)
 
 RunService.RenderStepped:Connect(function()
@@ -630,6 +641,10 @@ UserInputService.InputBegan:Connect(function(Action, NoChat)
 		LookVectorSprinting = true
 	end
 	
+	if Action.KeyCode == Enum.KeyCode[BlinkKey] then
+		Blinking = true
+	end
+	
 	if NoChat then
 		return nil
 	end
@@ -637,9 +652,15 @@ UserInputService.InputBegan:Connect(function(Action, NoChat)
 end)
 			
 UserInputService.InputEnded:Connect(function(ActionEnd)
+	
 	if ActionEnd.KeyCode == Enum.KeyCode[LookVectorSpeedKey] then
 		LookVectorSprinting = false
 	end
+	
+	if ActionEnd.KeyCode == Enum.KeyCode[BlinkKey] then
+		Blinking = false
+	end
+	
 end)
 
 RejoinButton.MouseButton1Click:Connect(function()
@@ -668,14 +689,8 @@ SprintButton.MouseButton1Click:Connect(function()
 	elseif not Sprint then
 		SprintButton.Text = ""
 		LookVectorSprint = false
+		Blink = false
 	end
-end)
-
-LookVectorSprintButton.MouseButton1Click:Connect(function()
-	SprintMethod = 'LookVector'
-	SprintMethodsButton.Text = "LookVector"
-	task.wait(1)
-	LookVectorSprint = true
 end)
 
 SprintMethodsButton.MouseButton1Click:Connect(function()
@@ -690,6 +705,22 @@ SprintMethodsButton.MouseButton1Click:Connect(function()
 	end
 end)
 
+LookVectorSprintButton.MouseButton1Click:Connect(function()
+	SprintMethod = 'LookVector'
+	SprintMethodsButton.Text = "LookVector"
+	task.wait(1)
+	LookVectorSprint = true
+	SprintSpeedBox.PlaceholderText = "170"
+end)
+
+BlinkSprintButton.MouseButton1Click:Connect(function()
+	SprintMethod = 'Blink'
+	SprintMethodsButton.Text = "Blink"
+	task.wait(1)
+	Blink = true
+	SprintSpeedBox.PlaceholderText = "8"
+end)
+	
 local Sound = Instance.new('Sound')
 Sound.Parent = game:GetService('Workspace')
 Sound.SoundId = UserJoins
