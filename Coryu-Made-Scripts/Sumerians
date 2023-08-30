@@ -14,26 +14,35 @@ local LookVectorSprint = false
 local LookVectorSprinting = false
 local Sprint = false
 local SprintGui = false
-local Blink = false
+local Blink = true
 local Blinking = false
+local CFrameSprint = false
+local CFrameSprinting = false
 
 -- | Ints | --
 
-local SprintSpeedLookVector = 170;
+local SprintSpeedLookVector = 200;
 local BlinkSpeed = 8;
+local CFrameSpeed = 5;
 
 -- | Hotkeys | --
 
 local LookVectorSpeedKey = 'LeftShift'
 local BlinkKey = 'LeftShift'
-
--- | Methods | --
-
-local SprintMethod;
+local CFrameKey = 'LeftShift'
 
 -- | Sounds | --
 
 local UserJoins = 'rbxassetid://1862048961';
+
+-- | Tables | --
+
+local KeysTable = {
+	['W'] = false;
+	['A'] = false;
+	['S'] = false;
+	['D'] = false;
+}
 
 -- | Gui | --
 
@@ -444,7 +453,7 @@ SprintMethodsButton.BorderSizePixel = 0
 SprintMethodsButton.Position = UDim2.new(0.0325581394, 0, 0.178324267, 0)
 SprintMethodsButton.Size = UDim2.new(0, 200, 0, 21)
 SprintMethodsButton.Font = Enum.Font.Highway
-SprintMethodsButton.Text = "LookVector"
+SprintMethodsButton.Text = "Blink"
 SprintMethodsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 SprintMethodsButton.TextSize = 14.000
 
@@ -539,10 +548,43 @@ SprintSpeedBox.Position = UDim2.new(0.0325581394, 0, 0.50425601, 0)
 SprintSpeedBox.Size = UDim2.new(0, 200, 0, 21)
 SprintSpeedBox.Font = Enum.Font.Highway
 SprintSpeedBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
-SprintSpeedBox.PlaceholderText = "170"
+SprintSpeedBox.PlaceholderText = tonumber(BlinkSpeed)
 SprintSpeedBox.Text = ""
 SprintSpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 SprintSpeedBox.TextSize = 14.000
+SprintSpeedBox.Visible = true
+
+local SprintSpeedBox2 = Instance.new("TextBox")
+SprintSpeedBox2.Name = "SprintSpeedBox"
+SprintSpeedBox2.Parent = FirstFrame_Movement1
+SprintSpeedBox2.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SprintSpeedBox2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintSpeedBox2.BorderSizePixel = 0
+SprintSpeedBox2.Position = UDim2.new(0.0325581394, 0, 0.50425601, 0)
+SprintSpeedBox2.Size = UDim2.new(0, 200, 0, 21)
+SprintSpeedBox2.Font = Enum.Font.Highway
+SprintSpeedBox2.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+SprintSpeedBox2.PlaceholderText = tonumber(CFrameSpeed)
+SprintSpeedBox2.Text = ""
+SprintSpeedBox2.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintSpeedBox2.TextSize = 14.000
+SprintSpeedBox2.Visible = false
+
+local SprintSpeedBox3 = Instance.new("TextBox")
+SprintSpeedBox3.Name = "SprintSpeedBox"
+SprintSpeedBox3.Parent = FirstFrame_Movement1
+SprintSpeedBox3.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SprintSpeedBox3.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SprintSpeedBox3.BorderSizePixel = 0
+SprintSpeedBox3.Position = UDim2.new(0.0325581394, 0, 0.50425601, 0)
+SprintSpeedBox3.Size = UDim2.new(0, 200, 0, 21)
+SprintSpeedBox3.Font = Enum.Font.Highway
+SprintSpeedBox3.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+SprintSpeedBox3.PlaceholderText = tonumber(SprintSpeedLookVector)
+SprintSpeedBox3.Text = ""
+SprintSpeedBox3.TextColor3 = Color3.fromRGB(255, 255, 255)
+SprintSpeedBox3.TextSize = 14.000
+SprintSpeedBox3.Visible = false
 
 local SprintSpeedTitle = Instance.new("TextLabel")
 SprintSpeedTitle.Name = "SprintSpeedTitle"
@@ -609,31 +651,99 @@ function Chat()
 	ChatSpy.ChatBarParentFrame.Position = ChatSpy.ChatChannelParentFrame.Position + UDim2.new(UDim.new(), ChatSpy.ChatChannelParentFrame.Size.Y)
 end
 
-RunService.RenderStepped:Connect(function()
+RunService.Stepped:Connect(function()
 	
 	if LookVectorSprint then
+		SprintSpeedBox3.Visible = true
+		SprintSpeedBox2.Visible = false
+		SprintSpeedBox.Visible = false
 		if LookVectorSprinting then
-			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.Velocity = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame.lookVector * SprintSpeedLookVector
+			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.Velocity = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame.lookVector * SprintSpeedLookVector / 1
 		end
 	end
 	
 	if Blink then
+	SprintSpeedBox.Visible = true
+	SprintSpeedBox3.Visible = false
+	SprintSpeedBox2.Visible = false
 		if Blinking then
 			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame + Vector3.new(LocalPlayer.Character.Humanoid.MoveDirection.X * BlinkSpeed / 5, 0, LocalPlayer.Character.Humanoid.MoveDirection.Z * BlinkSpeed / 5)
 		end
 	end
-			
+	
+	if CFrameSprint then
+	SprintSpeedBox2.Visible = true
+	SprintSpeedBox3.Visible = false
+	SprintSpeedBox.Visible = false
+		if CFrameSprinting then
+			if KeysTable['W'] then
+				LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame * CFrame.new(0,0,-CFrameSpeed)
+			end
+			if KeysTable['A'] then
+				LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame * CFrame.new(-CFrameSpeed,0,0)
+			end
+			if KeysTable['S'] then
+				LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame * CFrame.new(0,0,CFrameSpeed)
+			end
+			if KeysTable['D'] then
+				LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame * CFrame.new(CFrameSpeed,0,0)
+			end
+		end
+	end
+
+	if not Sprint then
+		LookVectorSprint = false
+		Blink = false
+		CFrameSprint = false
+	end
+	
+	if string.len(SprintSpeedBox3.Visible.Text) > 0 then
+		if LookVectorSprint then
+			SprintSpeedLookVector = string.upper(string.sub(tostring(SprintSpeedBox3.Text),1,4))
+		end
+	end
+	
+	if string.len(SprintSpeedBox2.Visible.Text) > 0 then
+		if CFrameSprint then
+			CFrameSpeed = string.upper(string.sub(tostring(SprintSpeedBox2.Text),1,4))
+		end
+	end
+	
+	if string.len(SprintSpeedBox.Visible.Text) > 0 then
+		if Blink then
+			BlinkSpeed = string.upper(string.sub(tostring(SprintSpeedBox.Text),1,4))
+		end
+	end
 end)
 
-RunService.RenderStepped:Connect(function()
+
+
+RunService.Stepped:Connect(function()
 	if Sprint then
-		if SprintMethod == 'LookVector' then
+		LookVectorSprintButton.MouseButton1Click:Connect(function() 
+			SprintMethodsButton.Text = "LookVector"
+			task.wait(0.2)
 			LookVectorSprint = true
-		elseif SprintMethod == 'Blink' then
+			Blink = false
+			CFrameSprint = false
+			SprintSpeedBox.PlaceholderText = tonumber(SprintSpeedLookVector)
+		end)
+		BlinkSprintButton.MouseButton1Click:Connect(function()
+			SprintMethodsButton.Text = "Blink"
+			task.wait(0.2)
 			Blink = true
-		elseif SprintMethod == 'CFrame' then
+			LookVectorSprint = false
+			CFrameSprint = false
+			SprintSpeedBox.PlaceholderText = tonumber(BlinkSpeed)
+		end)
+		CFrameSprintButton.MouseButton1Click:Connect(function()
+			SprintMethodsButton.Text = "CFrame"
+			task.wait(0.2)
+			Blink = false
+			LookVectorSprint = false
 			CFrameSprint = true
-		end
+			SprintSpeedBox.PlaceholderText = tonumber(CFrameSpeed)
+		end)
 	end
 end)
 
@@ -646,12 +756,31 @@ UserInputService.InputBegan:Connect(function(Action, NoChat)
 		Blinking = true
 	end
 	
+	if Action.KeyCode == Enum.KeyCode[CFrameKey] then
+		CFrameSprinting = true
+	end
+
 	if NoChat then
 		return nil
 	end
-
+	
+	if Action.KeyCode == Enum.KeyCode.W then
+		KeysTable['W'] = true
+	end
+	
+	if Action.KeyCode == Enum.KeyCode.A then
+		KeysTable['A'] = true
+	end
+	
+	if Action.KeyCode == Enum.KeyCode.S then
+		KeysTable['S'] = true
+	end
+	
+	if Action.KeyCode == Enum.KeyCode.D then
+		KeysTable['D'] = true
+	end
 end)
-			
+
 UserInputService.InputEnded:Connect(function(ActionEnd)
 	
 	if ActionEnd.KeyCode == Enum.KeyCode[LookVectorSpeedKey] then
@@ -660,6 +789,10 @@ UserInputService.InputEnded:Connect(function(ActionEnd)
 	
 	if ActionEnd.KeyCode == Enum.KeyCode[BlinkKey] then
 		Blinking = false
+	end
+	
+	if ActionEnd.KeyCode == Enum.KeyCode[CFrameKey] then
+		CFrameSprinting = false
 	end
 	
 end)
@@ -672,7 +805,7 @@ end)
 
 ShudownButton.MouseButton1Click:Connect(function()
 	ShudownButton.Text = "X"
-	task.wait(1)
+	task.wait(0.5)
 	game:shutdown()
 end)
 
@@ -689,8 +822,6 @@ SprintButton.MouseButton1Click:Connect(function()
 		task.wait(1)
 	elseif not Sprint then
 		SprintButton.Text = ""
-		LookVectorSprint = false
-		Blink = false
 	end
 end)
 
@@ -706,24 +837,7 @@ SprintMethodsButton.MouseButton1Click:Connect(function()
 	end
 end)
 
-LookVectorSprintButton.MouseButton1Click:Connect(function()
-	SprintMethod = 'LookVector'
-	SprintMethodsButton.Text = "LookVector"
-	task.wait(1)
-	LookVectorSprint = true
-	SprintSpeedBox.PlaceholderText = "170"
-end)
-
-BlinkSprintButton.MouseButton1Click:Connect(function()
-	SprintMethod = 'Blink'
-	SprintMethodsButton.Text = "Blink"
-	task.wait(1)
-	Blink = true
-	SprintSpeedBox.PlaceholderText = "8"
-end)
-	
 local Sound = Instance.new('Sound')
 Sound.Parent = game:GetService('Workspace')
 Sound.SoundId = UserJoins
 Sound.Playing = true
-
