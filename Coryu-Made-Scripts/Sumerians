@@ -25,6 +25,7 @@ local BlinkSpeed = 8;
 -- | Hotkeys | --
 
 local LookVectorSpeedKey = 'LeftShift'
+local BlinkKey = 'LeftShift'
 
 -- | Methods | --
 
@@ -618,7 +619,7 @@ RunService.RenderStepped:Connect(function()
 	
 	if Blink then
 		if Blinking then
-			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame + Vector3.new(LocalPlayer.Character.Humanoid.MoveDirection.X * BlinkSpeed / 5, 0, LocalPlayer.Character.Humanoid.MoveDirection.Z * Blinkspeed / 5)
+			LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'.CFrame + Vector3.new(LocalPlayer.Character.Humanoid.MoveDirection.X * BlinkSpeed / 5, 0, LocalPlayer.Character.Humanoid.MoveDirection.Z * BlinkSpeed / 5)
 		end
 	end
 			
