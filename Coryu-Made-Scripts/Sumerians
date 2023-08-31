@@ -1,5 +1,9 @@
 --sumerian
 
+--[[
+	Fix Camlock Targetting
+]]--
+
 getgenv().Players = game:GetService'Players';
 getgenv().LocalPlayer = Players.LocalPlayer;
 getgenv().Mouse = LocalPlayer:GetMouse();
@@ -7,17 +11,20 @@ getgenv().Teleport = game:GetService'TeleportService'
 getgenv().RunService = game:GetService'RunService'
 getgenv().UserInputService = game:GetService'UserInputService'
 getgenv().UserNotifications = function(title, text, time) game.StarterGui:SetCore("SendNotification", {Title = title; Text = text; Icon = 'rbxassetid://13941412659'; Duration = time;}) end
+getgenv().Camera = game:GetService'Workspace'.CurrentCamera
 
 -- | Booleans | --
 
-local LookVectorSprint = false
+local Blink = false
+local Blinking = false
+local Camlock = false
+local CamlockGui = false
+local CFrameSprint = false
+local CFrameSprinting = false
+local LookVectorSprint = true
 local LookVectorSprinting = false
 local Sprint = false
 local SprintGui = false
-local Blink = true
-local Blinking = false
-local CFrameSprint = false
-local CFrameSprinting = false
 
 -- | Ints | --
 
@@ -30,6 +37,12 @@ local CFrameSpeed = 5;
 local LookVectorSpeedKey = 'LeftShift'
 local BlinkKey = 'LeftShift'
 local CFrameKey = 'LeftShift'
+local CamlockKey = 'V'
+
+-- | Nils | --
+
+local CamlockTarget;
+local CamlockedPart;
 
 -- | Sounds | --
 
@@ -44,6 +57,11 @@ local KeysTable = {
 	['D'] = false;
 }
 
+local AbledParts = {
+	['Torso'] = 'Torso';
+	['Head'] = 'Head';
+	['HumanoidRootPart'] = 'HumanoidRootPart';
+}
 -- | Gui | --
 
 local Yas = Instance.new("ScreenGui")
@@ -210,15 +228,14 @@ MiscellaneousScrollFrameOne.BorderSizePixel = 0
 MiscellaneousScrollFrameOne.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
 MiscellaneousScrollFrameOne.Size = UDim2.new(0, 215, 0, 80)
 
-local TargetFrame_Combat = Instance.new("Frame")
-TargetFrame_Combat.Name = "TargetFrame_Combat"
-TargetFrame_Combat.Parent = ScrollFrameOneCombat
-TargetFrame_Combat.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-TargetFrame_Combat.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TargetFrame_Combat.BorderSizePixel = 0
-TargetFrame_Combat.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
-TargetFrame_Combat.Size = UDim2.new(0, 215, 0, 337)
-TargetFrame_Combat.ZIndex = 1
+local CamlockFrameCombat = Instance.new("Frame")
+CamlockFrameCombat.Name = "CamlockFrameCombat"
+CamlockFrameCombat.Parent = ScrollFrameOneCombat
+CamlockFrameCombat.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+CamlockFrameCombat.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CamlockFrameCombat.BorderSizePixel = 0
+CamlockFrameCombat.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
+CamlockFrameCombat.Size = UDim2.new(0, 215, 0, 191)
 
 local MiscellaneousTitle = Instance.new("TextLabel")
 MiscellaneousTitle.Name = "MiscellaneousTitle"
@@ -235,20 +252,170 @@ MiscellaneousTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 MiscellaneousTitle.TextSize = 13.000
 MiscellaneousTitle.TextXAlignment = Enum.TextXAlignment.Left
 
-local TargetTitle = Instance.new("TextLabel")
-TargetTitle.Name = "TargetTitle"
-TargetTitle.Parent = TargetFrame_Combat
-TargetTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TargetTitle.BackgroundTransparency = 1.000
-TargetTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TargetTitle.BorderSizePixel = 0
-TargetTitle.Position = UDim2.new(-0.0349246003, 0, -0.000779511291, 0)
-TargetTitle.Size = UDim2.new(0, 61, 0, 19)
-TargetTitle.ZIndex = 1
-TargetTitle.Font = Enum.Font.Highway
-TargetTitle.Text = "Targeting"
-TargetTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-TargetTitle.TextSize = 13.000
+local CamlockTitle = Instance.new("TextLabel")
+CamlockTitle.Name = "CamlockTitle"
+CamlockTitle.Parent = CamlockFrameCombat
+CamlockTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CamlockTitle.BackgroundTransparency = 1.000
+CamlockTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CamlockTitle.BorderSizePixel = 0
+CamlockTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+CamlockTitle.Size = UDim2.new(0, 45, 0, 19)
+CamlockTitle.Font = Enum.Font.Highway
+CamlockTitle.Text = "Camlock"
+CamlockTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+CamlockTitle.TextSize = 13.000
+CamlockTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local CamlockPartsButton = Instance.new("TextButton")
+CamlockPartsButton.Name = "CamlockPartsButton"
+CamlockPartsButton.Parent = CamlockFrameCombat
+CamlockPartsButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+CamlockPartsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CamlockPartsButton.BorderSizePixel = 0
+CamlockPartsButton.Position = UDim2.new(0.0325581394, 0, 0.58865422, 0)
+CamlockPartsButton.Size = UDim2.new(0, 200, 0, 21)
+CamlockPartsButton.Font = Enum.Font.Highway
+CamlockPartsButton.Text = "HumanoidRootPart"
+CamlockPartsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CamlockPartsButton.TextSize = 14.000
+
+local CamlockPartsText = Instance.new("TextLabel")
+CamlockPartsText.Name = "CamlockPartsText"
+CamlockPartsText.Parent = CamlockPartsButton
+CamlockPartsText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CamlockPartsText.BackgroundTransparency = 1.000
+CamlockPartsText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CamlockPartsText.BorderSizePixel = 0
+CamlockPartsText.Position = UDim2.new(0.264999986, 0, -1.07843161, 0)
+CamlockPartsText.Size = UDim2.new(0, 85, 0, 15)
+CamlockPartsText.Font = Enum.Font.Highway
+CamlockPartsText.Text = "Camlock Parts"
+CamlockPartsText.TextColor3 = Color3.fromRGB(255, 255, 255)
+CamlockPartsText.TextSize = 14.000
+
+local CamlockPartsUpOrDownText = Instance.new("TextLabel")
+CamlockPartsUpOrDownText.Name = "CamlockPartsUpOrDownText"
+CamlockPartsUpOrDownText.Parent = CamlockPartsButton
+CamlockPartsUpOrDownText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CamlockPartsUpOrDownText.BackgroundTransparency = 1.000
+CamlockPartsUpOrDownText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CamlockPartsUpOrDownText.BorderSizePixel = 0
+CamlockPartsUpOrDownText.Position = UDim2.new(0.899999976, 0, 0, 0)
+CamlockPartsUpOrDownText.Size = UDim2.new(0, 20, 0, 21)
+CamlockPartsUpOrDownText.Font = Enum.Font.Highway
+CamlockPartsUpOrDownText.Text = "▼"
+CamlockPartsUpOrDownText.TextColor3 = Color3.fromRGB(255, 255, 255)
+CamlockPartsUpOrDownText.TextSize = 18.000
+
+local BackFrameCamlockParts = Instance.new("Frame")
+BackFrameCamlockParts.Name = "BackFrameCamlockParts"
+BackFrameCamlockParts.Parent = CamlockPartsButton
+BackFrameCamlockParts.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+BackFrameCamlockParts.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BackFrameCamlockParts.BorderSizePixel = 0
+BackFrameCamlockParts.Position = UDim2.new(0, 0, 1, 0)
+BackFrameCamlockParts.Size = UDim2.new(0, 200, 0, 107)
+BackFrameCamlockParts.Visible = false
+BackFrameCamlockParts.ZIndex = 2
+
+local HeadCamlockPartButton = Instance.new("TextButton")
+HeadCamlockPartButton.Name = "HeadCamlockPartButton"
+HeadCamlockPartButton.Parent = BackFrameCamlockParts
+HeadCamlockPartButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+HeadCamlockPartButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HeadCamlockPartButton.BorderSizePixel = 0
+HeadCamlockPartButton.Position = UDim2.new(0.0280000009, 0, 0.0500000007, 0)
+HeadCamlockPartButton.Size = UDim2.new(0, 188, 0, 21)
+HeadCamlockPartButton.ZIndex = 2
+HeadCamlockPartButton.Font = Enum.Font.Highway
+HeadCamlockPartButton.Text = "Head"
+HeadCamlockPartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+HeadCamlockPartButton.TextSize = 14.000
+
+local TorsoCamlockPartButton = Instance.new("TextButton")
+TorsoCamlockPartButton.Name = "TorsoCamlockPartButton"
+TorsoCamlockPartButton.Parent = BackFrameCamlockParts
+TorsoCamlockPartButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+TorsoCamlockPartButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TorsoCamlockPartButton.BorderSizePixel = 0
+TorsoCamlockPartButton.Position = UDim2.new(0.0280000009, 0, 0.300000012, 0)
+TorsoCamlockPartButton.Size = UDim2.new(0, 188, 0, 21)
+TorsoCamlockPartButton.ZIndex = 2
+TorsoCamlockPartButton.Font = Enum.Font.Highway
+TorsoCamlockPartButton.Text = "Torso"
+TorsoCamlockPartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TorsoCamlockPartButton.TextSize = 14.000
+
+local HumanoidRootPartCamlockPartButton = Instance.new("TextButton")
+HumanoidRootPartCamlockPartButton.Name = "HumanoidRootPartCamlockPartButton"
+HumanoidRootPartCamlockPartButton.Parent = BackFrameCamlockParts
+HumanoidRootPartCamlockPartButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+HumanoidRootPartCamlockPartButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HumanoidRootPartCamlockPartButton.BorderSizePixel = 0
+HumanoidRootPartCamlockPartButton.Position = UDim2.new(0.0280000009, 0, 0.550000012, 0)
+HumanoidRootPartCamlockPartButton.Size = UDim2.new(0, 188, 0, 21)
+HumanoidRootPartCamlockPartButton.ZIndex = 2
+HumanoidRootPartCamlockPartButton.Font = Enum.Font.Highway
+HumanoidRootPartCamlockPartButton.Text = "HumanoidRootPart"
+HumanoidRootPartCamlockPartButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+HumanoidRootPartCamlockPartButton.TextSize = 14.000
+
+local CamlockTargetBox = Instance.new("TextBox")
+CamlockTargetBox.Name = "CamlockTargetBox"
+CamlockTargetBox.Parent = CamlockFrameCombat
+CamlockTargetBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+CamlockTargetBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CamlockTargetBox.BorderSizePixel = 0
+CamlockTargetBox.Position = UDim2.new(0.0325581394, 0, 0.257228404, 0)
+CamlockTargetBox.Size = UDim2.new(0, 200, 0, 21)
+CamlockTargetBox.Font = Enum.Font.Highway
+CamlockTargetBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+CamlockTargetBox.PlaceholderText = "Enter Player Username!"
+CamlockTargetBox.Text = ""
+CamlockTargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+CamlockTargetBox.TextSize = 14.000
+
+local CamlockTargetsText = Instance.new("TextLabel")
+CamlockTargetsText.Name = "CamlockTargetsText"
+CamlockTargetsText.Parent = CamlockTargetBox
+CamlockTargetsText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CamlockTargetsText.BackgroundTransparency = 1.000
+CamlockTargetsText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CamlockTargetsText.BorderSizePixel = 0
+CamlockTargetsText.Position = UDim2.new(0.264999986, 0, -1.07843161, 0)
+CamlockTargetsText.Size = UDim2.new(0, 85, 0, 15)
+CamlockTargetsText.Font = Enum.Font.Highway
+CamlockTargetsText.Text = "Camlock Target"
+CamlockTargetsText.TextColor3 = Color3.fromRGB(255, 255, 255)
+CamlockTargetsText.TextSize = 14.000
+
+local CamlockButton = Instance.new("TextButton")
+CamlockButton.Name = "CamlockButton"
+CamlockButton.Parent = CamlockFrameCombat
+CamlockButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+CamlockButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+CamlockButton.Position = UDim2.new(0.0744186044, 0, 0.797202885, 0)
+CamlockButton.Size = UDim2.new(0, 13, 0, 13)
+CamlockButton.Font = Enum.Font.Highway
+CamlockButton.Text = ""
+CamlockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CamlockButton.TextSize = 14.000
+
+local CamlockText = Instance.new("TextLabel")
+CamlockText.Name = "CamlockText"
+CamlockText.Parent = CamlockButton
+CamlockText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CamlockText.BackgroundTransparency = 1.000
+CamlockText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CamlockText.BorderSizePixel = 0
+CamlockText.Position = UDim2.new(1.15384614, 0, 0, 0)
+CamlockText.Size = UDim2.new(0, 52, 0, 13)
+CamlockText.Font = Enum.Font.Highway
+CamlockText.Text = " - Camlock"
+CamlockText.TextColor3 = Color3.fromRGB(255, 255, 255)
+CamlockText.TextSize = 14.000
+CamlockText.TextXAlignment = Enum.TextXAlignment.Left
 
 local RejoinButton = Instance.new("TextButton")
 RejoinButton.Name = "RejoinButton"
@@ -651,6 +818,15 @@ function Chat()
 	ChatSpy.ChatBarParentFrame.Position = ChatSpy.ChatChannelParentFrame.Position + UDim2.new(UDim.new(), ChatSpy.ChatChannelParentFrame.Size.Y)
 end
 
+local function searchdata(ply : string)
+	for i,v in next, Players:GetPlayers() do 
+		if string.sub(string.lower(v.Name), 1, string.len(ply)) == string.lower(ply) then 
+			return v
+		end
+	end
+	return nil
+end
+
 RunService.Stepped:Connect(function()
 	
 	if LookVectorSprint then
@@ -697,26 +873,30 @@ RunService.Stepped:Connect(function()
 		CFrameSprint = false
 	end
 	
-	if string.len(SprintSpeedBox3.Visible.Text) > 0 then
+	if string.len(SprintSpeedBox3.Text) > 0 then
 		if LookVectorSprint then
 			SprintSpeedLookVector = string.upper(string.sub(tostring(SprintSpeedBox3.Text),1,4))
 		end
 	end
 	
-	if string.len(SprintSpeedBox2.Visible.Text) > 0 then
+	if string.len(SprintSpeedBox2.Text) > 0 then
 		if CFrameSprint then
 			CFrameSpeed = string.upper(string.sub(tostring(SprintSpeedBox2.Text),1,4))
 		end
 	end
 	
-	if string.len(SprintSpeedBox.Visible.Text) > 0 then
+	if string.len(SprintSpeedBox.Text) > 0 then
 		if Blink then
 			BlinkSpeed = string.upper(string.sub(tostring(SprintSpeedBox.Text),1,4))
 		end
 	end
+
+	if Camlock and CamlockTarget and CamlockTarget.Character and CamlockTarget.Character:FindFirstChild(CamlockedPart) then 
+		Camera.CFrame = CFrame.new(Camera.CFrame.p, CamlockTarget.Character:FindFirstChild(CamlockedPart).CFrame.p)
+	else
+		return nil
+	end
 end)
-
-
 
 RunService.Stepped:Connect(function()
 	if Sprint then
@@ -743,6 +923,23 @@ RunService.Stepped:Connect(function()
 			LookVectorSprint = false
 			CFrameSprint = true
 			SprintSpeedBox.PlaceholderText = tonumber(CFrameSpeed)
+		end)
+	end
+	if Camlock then
+		HeadCamlockPartButton.MouseButton1Click:Connect(function()
+			CamlockPartsButton.Text = 'Head'
+			task.wait(0.2)
+			CamlockedPart = AbledParts['Head']
+		end)
+		TorsoCamlockPartButton.MouseButton1Click:Connect(function()
+			CamlockPartsButton.Text = 'Torso'
+			task.wait(0.2)
+			CamlockedPart = AbledParts['Torso']
+		end)
+		HumanoidRootPartCamlockPartButton.MouseButton1Click:Connect(function()
+			CamlockPartsButton.Text = 'HumanoidRootPart'
+			task.wait(0.2)
+			CamlockedPart = AbledParts['HumanoidRootPart']
 		end)
 	end
 end)
@@ -817,11 +1014,23 @@ end)
 
 SprintButton.MouseButton1Click:Connect(function()
 	Sprint = not Sprint
+	UserNotifications('Sumerians', 'Sprint is now '..tostring(Sprint))
 	if Sprint then 
 		SprintButton.Text = "X"
 		task.wait(1)
 	elseif not Sprint then
 		SprintButton.Text = ""
+	end
+end)
+
+CamlockButton.MouseButton1Click:Connect(function()
+	Camlock = not Camlock
+	UserNotifications('Sumerians', 'Camlock is now '..tostring(Camlock))
+	if Camlock then
+		CamlockButton.Text = "X"
+		task.wait(1)
+	elseif not Camlock then
+		CamlockButton.Text = "X"
 	end
 end)
 
@@ -834,6 +1043,27 @@ SprintMethodsButton.MouseButton1Click:Connect(function()
 		BackFrameSprintMethods:TweenPosition(UDim2.new(0, 0, 0.05, 0), "InOut", "Quart", 0.5, true, nil)
 		task.wait(0.5)
 		BackFrameSprintMethods.Visible = false
+	end
+end)
+
+CamlockPartsButton.MouseButton1Click:Connect(function()
+	CamlockGui = not CamlockGui
+	if CamlockGui then
+		BackFrameCamlockParts:TweenPosition(UDim2.new(0, 0, 1, 0), "InOut", "Quart", 0.5, true, nil)
+		BackFrameCamlockParts.Visible = true
+	elseif not CamlockGui then
+		BackFrameCamlockParts:TweenPosition(UDim2.new(0, 0, 0.05, 0), "InOut", "Quart", 0.5, true, nil)
+		task.wait(0.5)
+		BackFrameCamlockParts.Visible = false
+	end
+end)
+
+CamlockTargetBox.FocusLost:Connect(function()
+	if string.len(CamlockTargetBox.Text) > 0 then
+		CamlockTarget = searchdata(string.upper(string.sub(tostring(CamlockTargetBox.Text),1,1)))
+		if CamlockTarget and tostring(CamlockTarget) then
+			Camlock = true
+		end
 	end
 end)
 
