@@ -1,7 +1,8 @@
---sumerian
+--pyrus
 
 --[[
-	Fix Camlock Targetting
+	Make Rectange Shape Esp
+	Make More Info Esp (have deep info on the target)
 ]]--
 
 getgenv().Players = game:GetService'Players';
@@ -15,16 +16,24 @@ getgenv().Camera = game:GetService'Workspace'.CurrentCamera
 
 -- | Booleans | --
 
+local BasicInfo = true
 local Blink = false
 local Blinking = false
 local Camlock = false
 local CamlockGui = false
 local CFrameSprint = false
 local CFrameSprinting = false
+local CircleEsp = false
+local EspColoringFrame = false
+local EspToggle = false
 local LookVectorSprint = true
 local LookVectorSprinting = false
+local MorInfoEsp = false
+local ShapesEsp = true
+local SquareEsp = false
 local Sprint = false
 local SprintGui = false
+local TracerEsp = true
 
 -- | Ints | --
 
@@ -43,6 +52,12 @@ local CamlockKey = 'V'
 
 local CamlockTarget;
 local CamlockedPart;
+local EspColor;
+local EspTarget;
+
+-- | Methods | --
+
+local EspMethod = 'Rectangle'
 
 -- | Sounds | --
 
@@ -61,6 +76,16 @@ local AbledParts = {
 	['Torso'] = 'Torso';
 	['Head'] = 'Head';
 	['HumanoidRootPart'] = 'HumanoidRootPart';
+}
+
+local EspColorTable = {
+	['Red'] = Color3.fromRGB(255,0,0);
+	['Royal Purple'] = Color3.fromRGB(85,0,255);
+	['Yellow'] = Color3.fromRGB(255, 255, 0);
+	['Orange'] = Color3.fromRGB(255,140,0);
+	['Blue'] = Color3.fromRGB(0,0,255);
+	['Green'] = Color3.fromRGB(0,255,0);
+	['Pink'] = Color3.fromRGB(255, 85, 255);
 }
 -- | Gui | --
 
@@ -138,7 +163,7 @@ Title.Position = UDim2.new(0.721, 0, 0.954710126, 0)
 Title.Size = UDim2.new(0, 68, 0, 25)
 Title.ZIndex = 1
 Title.Font = Enum.Font.Highway
-Title.Text = "Sumerian - Made By Coryu"
+Title.Text = "Pyrus - Made By Coryu"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 17.000
 
@@ -236,6 +261,426 @@ CamlockFrameCombat.BorderColor3 = Color3.fromRGB(0, 0, 0)
 CamlockFrameCombat.BorderSizePixel = 0
 CamlockFrameCombat.Position = UDim2.new(0.0299999993, 0, 0.00499999989, 0)
 CamlockFrameCombat.Size = UDim2.new(0, 215, 0, 191)
+
+local EspConfigFrame = Instance.new("Frame")
+EspConfigFrame.Name = "EspConfigFrame"
+EspConfigFrame.Parent = ScrollFrameOneCombat
+EspConfigFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+EspConfigFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspConfigFrame.BorderSizePixel = 0
+EspConfigFrame.Position = UDim2.new(0.0299999993, 0, 0.194999993, 0)
+EspConfigFrame.Size = UDim2.new(0, 215, 0, 335)
+
+local EspTitle = Instance.new("TextLabel")
+EspTitle.Name = "EspTitle"
+EspTitle.Parent = EspConfigFrame
+EspTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EspTitle.BackgroundTransparency = 1.000
+EspTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspTitle.BorderSizePixel = 0
+EspTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+EspTitle.Size = UDim2.new(0, 45, 0, 19)
+EspTitle.Font = Enum.Font.Highway
+EspTitle.Text = "Esp"
+EspTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspTitle.TextSize = 13.000
+EspTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local EspColorButton = Instance.new("TextButton")
+EspColorButton.Name = "EspColorButton"
+EspColorButton.Parent = EspConfigFrame
+EspColorButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+EspColorButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspColorButton.BorderSizePixel = 0
+EspColorButton.Position = UDim2.new(0.0325581394, 0, 0.358803451, 0)
+EspColorButton.Size = UDim2.new(0, 200, 0, 21)
+EspColorButton.Font = Enum.Font.Highway
+EspColorButton.Text = "Royal Purple"
+EspColorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspColorButton.TextSize = 14.000
+
+local EspColorText = Instance.new("TextLabel")
+EspColorText.Name = "EspColorText"
+EspColorText.Parent = EspColorButton
+EspColorText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EspColorText.BackgroundTransparency = 1.000
+EspColorText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspColorText.BorderSizePixel = 0
+EspColorText.Position = UDim2.new(0.264999986, 0, -1.07843161, 0)
+EspColorText.Size = UDim2.new(0, 85, 0, 15)
+EspColorText.Font = Enum.Font.Highway
+EspColorText.Text = "Esp Color"
+EspColorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspColorText.TextSize = 14.000
+
+local EspColorTextUpOrDown = Instance.new("TextLabel")
+EspColorTextUpOrDown.Name = "EspColorTextUpOrDown"
+EspColorTextUpOrDown.Parent = EspColorButton
+EspColorTextUpOrDown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EspColorTextUpOrDown.BackgroundTransparency = 1.000
+EspColorTextUpOrDown.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspColorTextUpOrDown.BorderSizePixel = 0
+EspColorTextUpOrDown.Position = UDim2.new(0.899999976, 0, 0, 0)
+EspColorTextUpOrDown.Size = UDim2.new(0, 20, 0, 21)
+EspColorTextUpOrDown.Font = Enum.Font.Highway
+EspColorTextUpOrDown.Text = "▼"
+EspColorTextUpOrDown.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspColorTextUpOrDown.TextSize = 18.000
+
+local EspColorFrame = Instance.new("Frame")
+EspColorFrame.Name = "EspColorFrame"
+EspColorFrame.Parent = EspColorButton
+EspColorFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+EspColorFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspColorFrame.BorderSizePixel = 0
+EspColorFrame.Position = UDim2.new(0, 0, 1.00000143, 0)
+EspColorFrame.Size = UDim2.new(0, 200, 0, 193)
+EspColorFrame.Visible = false
+EspColorFrame.ZIndex = 2
+
+local RedEspButton = Instance.new("TextButton")
+RedEspButton.Name = "RedEspButton"
+RedEspButton.Parent = EspColorFrame
+RedEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+RedEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+RedEspButton.BorderSizePixel = 0
+RedEspButton.Position = UDim2.new(0.0280000009, 0, 0.0399999991, 0)
+RedEspButton.Size = UDim2.new(0, 188, 0, 21)
+RedEspButton.ZIndex = 2
+RedEspButton.Font = Enum.Font.Highway
+RedEspButton.Text = "Red"
+RedEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RedEspButton.TextSize = 14.000
+
+local PurpleEspButton = Instance.new("TextButton")
+PurpleEspButton.Name = "PurpleEspButton"
+PurpleEspButton.Parent = EspColorFrame
+PurpleEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+PurpleEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+PurpleEspButton.BorderSizePixel = 0
+PurpleEspButton.Position = UDim2.new(0.0280000009, 0, 0.180000007, 0)
+PurpleEspButton.Size = UDim2.new(0, 188, 0, 21)
+PurpleEspButton.ZIndex = 2
+PurpleEspButton.Font = Enum.Font.Highway
+PurpleEspButton.Text = "Royal Purple"
+PurpleEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+PurpleEspButton.TextSize = 14.000
+
+local YellowEspButton = Instance.new("TextButton")
+YellowEspButton.Name = "YellowEspButton"
+YellowEspButton.Parent = EspColorFrame
+YellowEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+YellowEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+YellowEspButton.BorderSizePixel = 0
+YellowEspButton.Position = UDim2.new(0.0279998779, 0, 0.322020859, 0)
+YellowEspButton.Size = UDim2.new(0, 188, 0, 21)
+YellowEspButton.ZIndex = 2
+YellowEspButton.Font = Enum.Font.Highway
+YellowEspButton.Text = "Yellow"
+YellowEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+YellowEspButton.TextSize = 14.000
+
+local OrangeEspButton = Instance.new("TextButton")
+OrangeEspButton.Name = "OrangeEspButton"
+OrangeEspButton.Parent = EspColorFrame
+OrangeEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+OrangeEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+OrangeEspButton.BorderSizePixel = 0
+OrangeEspButton.Position = UDim2.new(0.0280000009, 0, 0.460000008, 0)
+OrangeEspButton.Size = UDim2.new(0, 188, 0, 21)
+OrangeEspButton.ZIndex = 2
+OrangeEspButton.Font = Enum.Font.Highway
+OrangeEspButton.Text = "Orange"
+OrangeEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OrangeEspButton.TextSize = 14.000
+
+local BlueEspButton = Instance.new("TextButton")
+BlueEspButton.Name = "BlueEspButton"
+BlueEspButton.Parent = EspColorFrame
+BlueEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+BlueEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BlueEspButton.BorderSizePixel = 0
+BlueEspButton.Position = UDim2.new(0.0280000009, 0, 0.600000024, 0)
+BlueEspButton.Size = UDim2.new(0, 188, 0, 21)
+BlueEspButton.ZIndex = 2
+BlueEspButton.Font = Enum.Font.Highway
+BlueEspButton.Text = "Blue"
+BlueEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+BlueEspButton.TextSize = 14.000
+
+local GreenEspButton = Instance.new("TextButton")
+GreenEspButton.Name = "GreenEspButton"
+GreenEspButton.Parent = EspColorFrame
+GreenEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+GreenEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+GreenEspButton.BorderSizePixel = 0
+GreenEspButton.Position = UDim2.new(0.0280000009, 0, 0.74000001, 0)
+GreenEspButton.Size = UDim2.new(0, 188, 0, 21)
+GreenEspButton.ZIndex = 2
+GreenEspButton.Font = Enum.Font.Highway
+GreenEspButton.Text = "Green"
+GreenEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+GreenEspButton.TextSize = 14.000
+
+local PinkEspButton = Instance.new("TextButton")
+PinkEspButton.Name = "PinkEspButton"
+PinkEspButton.Parent = EspColorFrame
+PinkEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+PinkEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+PinkEspButton.BorderSizePixel = 0
+PinkEspButton.Position = UDim2.new(0.0280000009, 0, 0.879999995, 0)
+PinkEspButton.Size = UDim2.new(0, 188, 0, 21)
+PinkEspButton.ZIndex = 2
+PinkEspButton.Font = Enum.Font.Highway
+PinkEspButton.Text = "Pink"
+PinkEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+PinkEspButton.TextSize = 14.000
+
+local EspTargetBox = Instance.new("TextBox")
+EspTargetBox.Name = "EspTargetBox"
+EspTargetBox.Parent = EspConfigFrame
+EspTargetBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+EspTargetBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspTargetBox.BorderSizePixel = 0
+EspTargetBox.Position = UDim2.new(0.0325581394, 0, 0.128870174, 0)
+EspTargetBox.Size = UDim2.new(0, 200, 0, 21)
+EspTargetBox.Font = Enum.Font.Highway
+EspTargetBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+EspTargetBox.PlaceholderText = "Enter Player Username!"
+EspTargetBox.Text = ""
+EspTargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspTargetBox.TextSize = 14.000
+
+local EspTargetText = Instance.new("TextLabel")
+EspTargetText.Name = "EspTargetText"
+EspTargetText.Parent = EspTargetBox
+EspTargetText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EspTargetText.BackgroundTransparency = 1.000
+EspTargetText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspTargetText.BorderSizePixel = 0
+EspTargetText.Position = UDim2.new(0.264999986, 0, -1.07843161, 0)
+EspTargetText.Size = UDim2.new(0, 85, 0, 15)
+EspTargetText.Font = Enum.Font.Highway
+EspTargetText.Text = "Esp Target"
+EspTargetText.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspTargetText.TextSize = 14.000
+
+local TracersButton = Instance.new("TextButton")
+TracersButton.Name = "TracersButton"
+TracersButton.Parent = EspConfigFrame
+TracersButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+TracersButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+TracersButton.Position = UDim2.new(0.0744186044, 0, 0.797202885, 0)
+TracersButton.Size = UDim2.new(0, 13, 0, 13)
+TracersButton.Font = Enum.Font.Highway
+TracersButton.Text = ""
+TracersButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TracersButton.TextSize = 14.000
+
+local TracersText = Instance.new("TextLabel")
+TracersText.Name = "TracersText"
+TracersText.Parent = TracersButton
+TracersText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TracersText.BackgroundTransparency = 1.000
+TracersText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TracersText.BorderSizePixel = 0
+TracersText.Position = UDim2.new(1.15384614, 0, 0, 0)
+TracersText.Size = UDim2.new(0, 52, 0, 13)
+TracersText.Font = Enum.Font.Highway
+TracersText.Text = " - Tracers"
+TracersText.TextColor3 = Color3.fromRGB(255, 255, 255)
+TracersText.TextSize = 14.000
+TracersText.TextXAlignment = Enum.TextXAlignment.Left
+
+local EspConfigTitle = Instance.new("TextLabel")
+EspConfigTitle.Name = "EspConfigTitle"
+EspConfigTitle.Parent = EspConfigFrame
+EspConfigTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EspConfigTitle.BackgroundTransparency = 1.000
+EspConfigTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspConfigTitle.BorderSizePixel = 0
+EspConfigTitle.Position = UDim2.new(-0.00236646086, 0, 0.22907123, 0)
+EspConfigTitle.Size = UDim2.new(0, 60, 0, 19)
+EspConfigTitle.Font = Enum.Font.Highway
+EspConfigTitle.Text = "Esp Config"
+EspConfigTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspConfigTitle.TextSize = 13.000
+EspConfigTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local EspShapeButton = Instance.new("TextButton")
+EspShapeButton.Name = "EspShapeButton"
+EspShapeButton.Parent = EspConfigFrame
+EspShapeButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+EspShapeButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspShapeButton.BorderSizePixel = 0
+EspShapeButton.Position = UDim2.new(0.0325581394, 0, 0.525967658, 0)
+EspShapeButton.Size = UDim2.new(0, 200, 0, 21)
+EspShapeButton.Font = Enum.Font.Highway
+EspShapeButton.Text = "Rectangle"
+EspShapeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspShapeButton.TextSize = 14.000
+
+local EspShapeText = Instance.new("TextLabel")
+EspShapeText.Name = "EspShapeText"
+EspShapeText.Parent = EspShapeButton
+EspShapeText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EspShapeText.BackgroundTransparency = 1.000
+EspShapeText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspShapeText.BorderSizePixel = 0
+EspShapeText.Position = UDim2.new(0.264999986, 0, -1.07843161, 0)
+EspShapeText.Size = UDim2.new(0, 85, 0, 15)
+EspShapeText.Font = Enum.Font.Highway
+EspShapeText.Text = "Esp Shape"
+EspShapeText.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspShapeText.TextSize = 14.000
+
+local EspShapeUpOrDownText = Instance.new("TextLabel")
+EspShapeUpOrDownText.Name = "EspShapeUpOrDownText"
+EspShapeUpOrDownText.Parent = EspShapeButton
+EspShapeUpOrDownText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EspShapeUpOrDownText.BackgroundTransparency = 1.000
+EspShapeUpOrDownText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspShapeUpOrDownText.BorderSizePixel = 0
+EspShapeUpOrDownText.Position = UDim2.new(0.899999976, 0, 0, 0)
+EspShapeUpOrDownText.Size = UDim2.new(0, 20, 0, 21)
+EspShapeUpOrDownText.Font = Enum.Font.Highway
+EspShapeUpOrDownText.Text = "▼"
+EspShapeUpOrDownText.TextColor3 = Color3.fromRGB(255, 255, 255)
+EspShapeUpOrDownText.TextSize = 18.000
+
+local EspShapeFrame = Instance.new("Frame")
+EspShapeFrame.Name = "EspShapeFrame"
+EspShapeFrame.Parent = EspShapeButton
+EspShapeFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+EspShapeFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EspShapeFrame.BorderSizePixel = 0
+EspShapeFrame.Position = UDim2.new(0, 0, 1.00000143, 0)
+EspShapeFrame.Size = UDim2.new(0, 200, 0, 100)
+EspShapeFrame.Visible = false
+EspShapeFrame.ZIndex = 2
+
+local RectangleEspButton = Instance.new("TextButton")
+RectangleEspButton.Name = "RectangleEspButton"
+RectangleEspButton.Parent = EspShapeFrame
+RectangleEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+RectangleEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+RectangleEspButton.BorderSizePixel = 0
+RectangleEspButton.Position = UDim2.new(0.0279998779, 0, 0.119999997, 0)
+RectangleEspButton.Size = UDim2.new(0, 188, 0, 21)
+RectangleEspButton.ZIndex = 2
+RectangleEspButton.Font = Enum.Font.Highway
+RectangleEspButton.Text = "Rectangle"
+RectangleEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RectangleEspButton.TextSize = 14.000
+
+local SquareEspButton = Instance.new("TextButton")
+SquareEspButton.Name = "SquareEspButton"
+SquareEspButton.Parent = EspShapeFrame
+SquareEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SquareEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SquareEspButton.BorderSizePixel = 0
+SquareEspButton.Position = UDim2.new(0.0279998779, 0, 0.389999986, 0)
+SquareEspButton.Size = UDim2.new(0, 188, 0, 21)
+SquareEspButton.ZIndex = 2
+SquareEspButton.Font = Enum.Font.Highway
+SquareEspButton.Text = "Square"
+SquareEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SquareEspButton.TextSize = 14.000
+
+local CircleEspButton = Instance.new("TextButton")
+CircleEspButton.Name = "CircleEspButton"
+CircleEspButton.Parent = EspShapeFrame
+CircleEspButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+CircleEspButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CircleEspButton.BorderSizePixel = 0
+CircleEspButton.Position = UDim2.new(0.0279998779, 0, 0.652020872, 0)
+CircleEspButton.Size = UDim2.new(0, 188, 0, 21)
+CircleEspButton.ZIndex = 2
+CircleEspButton.Font = Enum.Font.Highway
+CircleEspButton.Text = "Circle"
+CircleEspButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CircleEspButton.TextSize = 14.000
+
+local ShapesButton = Instance.new("TextButton")
+ShapesButton.Name = "ShapesButton"
+ShapesButton.Parent = EspConfigFrame
+ShapesButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ShapesButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+ShapesButton.Position = UDim2.new(0.0744186044, 0, 0.871829748, 0)
+ShapesButton.Size = UDim2.new(0, 13, 0, 13)
+ShapesButton.Font = Enum.Font.Highway
+ShapesButton.Text = ""
+ShapesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShapesButton.TextSize = 14.000
+
+local ShapesText = Instance.new("TextLabel")
+ShapesText.Name = "ShapesText"
+ShapesText.Parent = ShapesButton
+ShapesText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ShapesText.BackgroundTransparency = 1.000
+ShapesText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ShapesText.BorderSizePixel = 0
+ShapesText.Position = UDim2.new(1.15384614, 0, 0, 0)
+ShapesText.Size = UDim2.new(0, 52, 0, 13)
+ShapesText.Font = Enum.Font.Highway
+ShapesText.Text = " - Shapes"
+ShapesText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShapesText.TextSize = 14.000
+ShapesText.TextXAlignment = Enum.TextXAlignment.Left
+
+local MoreInfoButton = Instance.new("TextButton")
+MoreInfoButton.Name = "MoreInfoButton"
+MoreInfoButton.Parent = EspConfigFrame
+MoreInfoButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MoreInfoButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+MoreInfoButton.Position = UDim2.new(0.0697674453, 0, 0.725561082, 0)
+MoreInfoButton.Size = UDim2.new(0, 13, 0, 13)
+MoreInfoButton.Font = Enum.Font.Highway
+MoreInfoButton.Text = ""
+MoreInfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+MoreInfoButton.TextSize = 14.000
+
+local MoreInfoText = Instance.new("TextLabel")
+MoreInfoText.Name = "MoreInfoText"
+MoreInfoText.Parent = MoreInfoButton
+MoreInfoText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MoreInfoText.BackgroundTransparency = 1.000
+MoreInfoText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+MoreInfoText.BorderSizePixel = 0
+MoreInfoText.Position = UDim2.new(1.15384614, 0, 0, 0)
+MoreInfoText.Size = UDim2.new(0, 52, 0, 13)
+MoreInfoText.Font = Enum.Font.Highway
+MoreInfoText.Text = " - More Info"
+MoreInfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
+MoreInfoText.TextSize = 14.000
+MoreInfoText.TextXAlignment = Enum.TextXAlignment.Left
+
+local BasicInfoButton = Instance.new("TextButton")
+BasicInfoButton.Name = "BasicInfoButton"
+BasicInfoButton.Parent = EspConfigFrame
+BasicInfoButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+BasicInfoButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+BasicInfoButton.Position = UDim2.new(0.0700000003, 0, 0.649999976, 0)
+BasicInfoButton.Size = UDim2.new(0, 13, 0, 13)
+BasicInfoButton.Font = Enum.Font.Highway
+BasicInfoButton.Text = ""
+BasicInfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+BasicInfoButton.TextSize = 14.000
+
+local BasicInfoText = Instance.new("TextLabel")
+BasicInfoText.Name = "BasicInfoText"
+BasicInfoText.Parent = BasicInfoButton
+BasicInfoText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BasicInfoText.BackgroundTransparency = 1.000
+BasicInfoText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+BasicInfoText.BorderSizePixel = 0
+BasicInfoText.Position = UDim2.new(1.15384614, 0, 0, 0)
+BasicInfoText.Size = UDim2.new(0, 52, 0, 13)
+BasicInfoText.Font = Enum.Font.Highway
+BasicInfoText.Text = " - Basic Info"
+BasicInfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
+BasicInfoText.TextSize = 14.000
+BasicInfoText.TextXAlignment = Enum.TextXAlignment.Left
 
 local MiscellaneousTitle = Instance.new("TextLabel")
 MiscellaneousTitle.Name = "MiscellaneousTitle"
@@ -827,6 +1272,50 @@ local function searchdata(ply : string)
 	return nil
 end
 
+local function Esp(Name)
+	if EspToggle and EspTarget and EspTarget.Character then
+	local BillBoard = Instance.new('BillboardGui', Name.Character.Torso)
+	local EspLabel = Instance.new('TextLabel', BillBoard)
+	local Tracer = Drawing.new('Line')
+	local Circle = Drawing.new('Circle')
+	local Square = Drawing.new('Square')
+
+	BillBoard.Name = 'Bill'
+	BillBoard.Adornee = part
+	BillBoard.AlwaysOnTop = true
+	BillBoard.Size = UDim2.new(0,100,0,100)
+	BillBoard.StudsOffset = Vector3.new(0,1.3,0)
+
+	EspLabel.Name = 'Esp'
+	EspLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	EspLabel.BackgroundTransparency = 1
+	EspLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	EspLabel.Size = UDim2.new(1,0,0,40)
+	EspLabel.Font = Enum.Font.Code
+	EspLabel.TextColor3 = EspColor
+	EspLabel.TextSize = 12
+	EspLabel.ZIndex = 1
+
+	Tracer.Visible = true
+	Tracer.Color = EspColor
+	Tracer.Thickness = 1
+	Tracer.Transparency = 1
+
+	Circle.Visible = false
+	Circle.Radius = 70
+	Circle.Color = EspColor
+	Circle.Thickness = 1
+	Circle.Filled = false
+	Circle.Transparency = 1
+
+	Square.Visible = false
+	Square.Color = EspColor
+	Square.Thickness = 1
+	Square.Transparency = 1
+	Square.Filled = false
+	end
+end
+
 RunService.Stepped:Connect(function()
 	
 	if LookVectorSprint then
@@ -896,6 +1385,34 @@ RunService.Stepped:Connect(function()
 	else
 		return nil
 	end
+
+	if EspToggle and EspTarget and EspTarget.Character and EspTarget.Character:FindFirstChild'Torso' then
+		local Vec = Vector3.new(0,3,0)
+		local NoVec = Vector3.new(0,0.5,0)
+		local Hum, OnScreen = Camera:WorldToViewportPoint(EspTarget.Character.HumanoidRootPart.Position)
+		local Minus = Camera:WorldToViewportPoint(EspTarget.Character.HumanoidRootPart.Position - Vec)
+		local Plus = Camera:WorldToViewportPoint(EspTarget.Character.HumanoidRootPart.Position + NoVec)
+		if OnScreen then
+			if BasicInfo then
+				EspLabel.Text = 'Name: - '..EspTarget.Name..' Health: - '..math.round(EspTarget.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - EspTarget.Character.Head.Position).magnitude)
+			elseif MorInfoEsp and not BasicInfo then
+				EspLabel.Text = 'Name: - '..EspTarget.Name..' Health: - '..math.round(EspTarget.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - EspTarget.Character.Head.Position).magnitude)..' Test'
+			end
+			if TracerEsp then
+				Tracer.Visible = true
+				Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 1)
+				Tracer.To = Vector2.new(Hum.Y, Hum.Y)
+			elseif SquareEsp then
+				Square.Visible = true
+				Square.Size = Vector2.new(3000 / Hum.Z, Plus.Y - Minus.Y)
+				Square.Position = Vector2.new(Hum.X - Square.Size.X / 2, Hum.Y - Square.Size.Y / 2)
+			elseif CircleEsp then
+				Circle.Visible = true
+				Circle.Size = Vector2.new(3000 / Hum.Z, Plus.Y - Minus.Y)
+				Circle.Position = Vector2.new(Hum.X - Square.Size.X / 2, Hum.Y - Square.Size.Y / 2)
+			end
+		end
+	end
 end)
 
 RunService.Stepped:Connect(function()
@@ -940,6 +1457,55 @@ RunService.Stepped:Connect(function()
 			CamlockPartsButton.Text = 'HumanoidRootPart'
 			task.wait(0.2)
 			CamlockedPart = AbledParts['HumanoidRootPart']
+		end)
+	end
+	if EspToggle then
+		MoreInfoButton.MouseButton1Click:Connect(function()
+			MoreInfoButton.Text = 'X'
+			task.wait(0.2)
+			BasicInfo = false
+			MoreInfoEsp = true
+		end)
+		BasicInfoButton.MouseButton1Click:Connect(function()
+			BasicInfoButton.Text = 'X'
+			task.wait(0.2)
+			MoreInfoEsp = false
+			BasicInfo = true
+		end)
+		RedEspButton.MouseButton1Click:Connect(function()
+			EspColorFrame.Text = 'Red'
+			task.wait(0.2)
+			EspColor = EspColorTable['Red']
+		end)
+		PurpleEspButton.MouseButton1Click:Connect(function()
+			EspColorFrame.Text = 'Royal Purple'
+			task.wait(0.2)
+			EspColor = EspColorTable['Royal Purple']
+		end)
+		YellowEspButton.MouseButton1Click:Connect(function()
+			EspColorFrame.Text = 'Yellow'
+			task.wait(0.2)
+			EspColor = EspColorTable['Yellow']
+		end)
+		OrangeEspButton.MouseButton1Click:Connect(function()
+			EspColorFrame.Text = 'Orange'
+			task.wait(0.2)
+			EspColor = EspColorTable['Orange']
+		end)
+		BlueEspButton.MouseButton1Click:Connect(function()
+			EspColorFrame.Text = 'Blue'
+			task.wait(0.2)
+			EspColor = EspColorTable['Blue']
+		end)
+		GreenEspButton.MouseButton1Click:Connect(function()
+			EspColorFrame.Text = 'Green'
+			task.wait(0.2)
+			EspColor = EspColorTable['Green']
+		end)
+		PinkEspButton.MouseButton1Click:Connect(function()
+			EspColorFrame.Text = 'Pink'
+			task.wait(0.2)
+			EspColor = EspColorTable['Pink']
 		end)
 	end
 end)
@@ -996,13 +1562,13 @@ end)
 
 RejoinButton.MouseButton1Click:Connect(function()
 	RejoinButton.Text = "X"
-	task.wait(1)
+	task.wait(0.2)
 	Teleport:Teleport(game.PlaceId)
 end)
 
 ShudownButton.MouseButton1Click:Connect(function()
 	ShudownButton.Text = "X"
-	task.wait(0.5)
+	task.wait(0.2)
 	game:shutdown()
 end)
 
@@ -1014,10 +1580,10 @@ end)
 
 SprintButton.MouseButton1Click:Connect(function()
 	Sprint = not Sprint
-	UserNotifications('Sumerians', 'Sprint is now '..tostring(Sprint))
+	UserNotifications('Pyrus', 'Sprint is now '..tostring(Sprint))
 	if Sprint then 
 		SprintButton.Text = "X"
-		task.wait(1)
+		task.wait(0.2)
 	elseif not Sprint then
 		SprintButton.Text = ""
 	end
@@ -1025,12 +1591,23 @@ end)
 
 CamlockButton.MouseButton1Click:Connect(function()
 	Camlock = not Camlock
-	UserNotifications('Sumerians', 'Camlock is now '..tostring(Camlock))
+	UserNotifications('Pyrus', 'Camlock is now '..tostring(Camlock))
 	if Camlock then
 		CamlockButton.Text = "X"
-		task.wait(1)
+		task.wait(0.2)
 	elseif not Camlock then
-		CamlockButton.Text = "X"
+		CamlockButton.Text = ""
+	end
+end)
+
+TracersButton.MouseButton1Click:Connect(function()
+	TracerEsp = not TracerEsp
+	UserNotifications('Pyrus', 'Tracers is now '..tostring(TracerEsp))
+	if TracerEsp then
+		TracersButton.Text = 'X'
+		task.wait(0.2)
+	elseif not TracerEsp then
+		TracersButton.Text = ''
 	end
 end)
 
@@ -1058,11 +1635,49 @@ CamlockPartsButton.MouseButton1Click:Connect(function()
 	end
 end)
 
+EspColorButton.MouseButton1Click:Connect(function()
+	EspColoringFrame = not EspColoringFrame
+	if EspColoringFrame then
+		EspColorFrame:TweenPosition(UDim2.new(0, 0, 1, 0), "InOut", "Quart", 0.5, true, nil)
+		EspColorFrame.Visible = true
+	elseif not EspColoringFrame then
+		EspColorFrame:TweenPosition(UDim2.new(0, 0, 0.05, 0), "InOut", "Quart", 0.5, true, nil)
+		task.wait(0.5)
+		EspColorFrame.Visible = false
+	end
+end)
+
+ShapesButton.MouseButton1Click:Connect(function()
+	ShapesEsp = not ShapesEsp
+	if ShapesEsp then
+		ShapesButton.Text = 'X'
+		task.wait(0.2)
+		if EspMethod = 'Circle' then
+			CircleEsp = true
+			SquareEsp = false
+		elseif EspMethod = 'Square' then
+			CircleEsp = false
+			SquareEsp = true
+		end
+	elseif not ShapesEsp then
+		ShapesButton.Text = ''
+	end
+end)
+
 CamlockTargetBox.FocusLost:Connect(function()
 	if string.len(CamlockTargetBox.Text) > 0 then
 		CamlockTarget = searchdata(string.upper(string.sub(tostring(CamlockTargetBox.Text),1,1)))
-		if CamlockTarget and tostring(CamlockTarget) then
+		if CamlockTarget then
 			Camlock = true
+		end
+	end
+end)
+
+EspTargetBox.FocusLost:Connect(function()
+	if string.len(EspTargetBox.Text) > 0 then
+		EspTarget = searchdata(string.upper(string.sub(tostring(EspTargetBox.Text),1,1)))
+		if EspTarget then
+			EspToggle = true
 		end
 	end
 end)
