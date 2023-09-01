@@ -1652,10 +1652,10 @@ ShapesButton.MouseButton1Click:Connect(function()
 	if ShapesEsp then
 		ShapesButton.Text = 'X'
 		task.wait(0.2)
-		if EspMethod = 'Circle' then
+		if EspMethod == 'Circle' then
 			CircleEsp = true
 			SquareEsp = false
-		elseif EspMethod = 'Square' then
+		elseif EspMethod == 'Square' then
 			CircleEsp = false
 			SquareEsp = true
 		end
