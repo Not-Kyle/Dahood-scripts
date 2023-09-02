@@ -1,7 +1,6 @@
 --pyrus
 
 --[[
-	Make Rectange Shape Esp
 	Make More Info Esp (have deep info on the target)
 ]]--
 
@@ -17,20 +16,19 @@ getgenv().Camera = game:GetService'Workspace'.CurrentCamera
 -- | Booleans | --
 
 local BasicInfo = true
-local Blink = false
+local Blink = true
 local Blinking = false
 local Camlock = false
 local CamlockGui = false
 local CFrameSprint = false
 local CFrameSprinting = false
-local CircleEsp = false
 local EspColoringFrame = false
-local EspToggle = false
-local LookVectorSprint = true
+local EspShapesFrameToggle = false
+local LookVectorSprint = false
 local LookVectorSprinting = false
 local MorInfoEsp = false
+local RectangeEsp = true
 local ShapesEsp = true
-local SquareEsp = false
 local Sprint = false
 local SprintGui = false
 local TracerEsp = true
@@ -40,6 +38,7 @@ local TracerEsp = true
 local SprintSpeedLookVector = 200;
 local BlinkSpeed = 8;
 local CFrameSpeed = 5;
+local Thickness = 1;
 
 -- | Hotkeys | --
 
@@ -1257,7 +1256,7 @@ MovementButton.MouseButton1Click:Connect(function()
 	BackFrameCombat.Visible = false
 end)
 
-function Chat()
+local function Chat()
 	local ChatSpy = LocalPlayer.PlayerGui.Chat.Frame
 	ChatSpy.ChatChannelParentFrame.Visible = true 
 	ChatSpy.ChatBarParentFrame.Position = ChatSpy.ChatChannelParentFrame.Position + UDim2.new(UDim.new(), ChatSpy.ChatChannelParentFrame.Size.Y)
@@ -1265,55 +1264,165 @@ end
 
 local function searchdata(ply : string)
 	for i,v in next, Players:GetPlayers() do 
-		if string.sub(string.lower(v.Name), 1, string.len(ply)) == string.lower(ply) then 
+		if string.sub(string.lower(v.DisplayName), 1, string.len(ply)) == string.lower(ply) then 
 			return v
 		end
 	end
 	return nil
 end
 
-local function Esp(Name)
-	if EspToggle and EspTarget and EspTarget.Character then
-	local BillBoard = Instance.new('BillboardGui', Name.Character.Torso)
-	local EspLabel = Instance.new('TextLabel', BillBoard)
-	local Tracer = Drawing.new('Line')
-	local Circle = Drawing.new('Circle')
-	local Square = Drawing.new('Square')
+local function Esp(Plr)
+    if EspTarget == LocalPlayer then
+         return nil
+    end
+    if EspColor == nil then
+        UserNotifications('Esp', 'Please select a color')
+    else
+        local BillBoard = Instance.new('BillboardGui', Plr.Character.Head)
+        local EspLabel = Instance.new('TextLabel', BillBoard)
+        local Tracer = Drawing.new('Line')
+        local Box = Drawing.new('Square')
+        local BoxOutline = Drawing.new('Square')
 
-	BillBoard.Name = 'Bill'
-	BillBoard.Adornee = part
-	BillBoard.AlwaysOnTop = true
-	BillBoard.Size = UDim2.new(0,100,0,100)
-	BillBoard.StudsOffset = Vector3.new(0,1.3,0)
+        BillBoard.Name = 'Bill'
+        BillBoard.Adornee = part
+        BillBoard.AlwaysOnTop = true
+        BillBoard.Size = UDim2.new(0,100,0,100)
+        BillBoard.StudsOffset = Vector3.new(0,1.3,0)
 
-	EspLabel.Name = 'Esp'
-	EspLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	EspLabel.BackgroundTransparency = 1
-	EspLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	EspLabel.Size = UDim2.new(1,0,0,40)
-	EspLabel.Font = Enum.Font.Code
-	EspLabel.TextColor3 = EspColor
-	EspLabel.TextSize = 12
-	EspLabel.ZIndex = 1
+        EspLabel.Name = 'Esp'
+        EspLabel.BackgroundColor3 = Color3.fromRGB(0,0,0)
+        EspLabel.BackgroundTransparency = 1
+        EspLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        EspLabel.BorderSizePixel = 1
+        EspLabel.Size = UDim2.new(1,0,0,40)
+        EspLabel.Font = Enum.Font.Code
+        EspLabel.TextSize = 12
+        EspLabel.ZIndex = 1
 
-	Tracer.Visible = true
-	Tracer.Color = EspColor
-	Tracer.Thickness = 1
-	Tracer.Transparency = 1
+        Tracer.Visible = true
+        Tracer.Thickness = Thickness
+        Tracer.Transparency = 1
 
-	Circle.Visible = false
-	Circle.Radius = 70
-	Circle.Color = EspColor
-	Circle.Thickness = 1
-	Circle.Filled = false
-	Circle.Transparency = 1
+        Box.Visible = true
+        Box.Thickness = Thickness
+        Box.Transparency = 1
+        Box.Filled = false
 
-	Square.Visible = false
-	Square.Color = EspColor
-	Square.Thickness = 1
-	Square.Transparency = 1
-	Square.Filled = false
-	end
+        RunService.RenderStepped:Connect(function()
+            if Plr and Plr.Character and Plr.Character:FindFirstChild'Humanoid' then
+                local Vec = Vector3.new(0,3,0)
+                local NoVec = Vector3.new(0,0.5,0)
+				EspLabel.TextColor3 = EspColor
+				Tracer.Color = EspColor
+                Box.Color = EspColor
+                BoxOutline.Color = EspColor
+                local Hum, OnScreen = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position)
+                local Head = Camera:WorldToViewportPoint(Plr.Character.Head.Position + NoVec)
+                local Division = 2200
+                local Minus = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position - Vec)
+                local Plus = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position + NoVec)
+                    if BasicInfo then
+                        BasicInfoButton.Text = "X"
+                        MoreInfoButton.Text = ""
+                        MorInfoEsp = false
+                        EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)
+                    elseif MorInfoEsp then
+                        BasicInfo = false
+                        BasicInfoButton.Text = ""
+                        MoreInfoButton.Text = "X"
+                        EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)..' Test'
+                    end
+                    if OnScreen then
+                        if TracerEsp then
+                            TracersButton.Text = 'X'
+                            Tracer.Visible = true
+                            Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 1)
+                            Tracer.To = Vector2.new(Hum.X, Hum.Y)
+                        elseif not TracerEsp then
+                            TracersButton.Text = ''
+                            Tracer.Visible = false
+                        end
+                        if RectangeEsp then
+                            Box.Visible = true
+                            Box.Size = Vector2.new(Division / Hum.Z, Head.Y - Minus.Y, Hum.X)
+                            Box.Position = Vector2.new(Hum.X - Box.Size.X / 2, Hum.Y - Box.Size.Y / 2)
+                        elseif not RectangeEsp then
+                            Box.Visible = false
+                        end
+                    else
+                        Tracer.Visible = false
+                        Box.Visible = false
+                    end
+                else
+                    Tracer.Visible = false
+                    Box.Visible = false
+                end
+            end)
+            Plr.CharacterAdded:connect(function()
+            task.wait(0.1)
+            local BillBoard = Instance.new('BillboardGui', Plr.Character.Head)
+			local EspLabel = Instance.new('TextLabel', BillBoard)
+			local Tracer = Drawing.new('Line')
+
+			BillBoard.Name = 'Bill'
+			BillBoard.Adornee = part
+			BillBoard.AlwaysOnTop = true
+			BillBoard.Size = UDim2.new(0,100,0,100)
+			BillBoard.StudsOffset = Vector3.new(0,1.3,0)
+
+			EspLabel.Name = 'Esp'
+			EspLabel.BackgroundColor3 = Color3.fromRGB(0,0,0)
+			EspLabel.BackgroundTransparency = 1
+			EspLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			EspLabel.BorderSizePixel = 1
+			EspLabel.Size = UDim2.new(1,0,0,40)
+			EspLabel.Font = Enum.Font.Code
+			EspLabel.TextSize = 12
+			EspLabel.ZIndex = 1
+
+			Tracer.Thickness = Thickness
+			Tracer.Transparency = 1
+
+			RunService.RenderStepped:Connect(function()
+            if Plr and Plr.Character and Plr.Character:FindFirstChild'Humanoid' then
+                local Vec = Vector3.new(0,3,0)
+                local NoVec = Vector3.new(0,0.5,0)
+				EspLabel.TextColor3 = EspColor
+				Tracer.Color = EspColor
+                local Hum, OnScreen = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position)
+                local Minus = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position - Vec)
+                local Plus = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position + NoVec)
+                    if BasicInfo then
+                        BasicInfoButton.Text = "X"
+                        MoreInfoButton.Text = ""
+                        MorInfoEsp = false
+                        EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)
+                    elseif MorInfoEsp then
+                        BasicInfo = false
+                        BasicInfoButton.Text = ""
+                        MoreInfoButton.Text = "X"
+                        EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)..' Test'
+                    end
+                    if OnScreen then
+                        if TracerEsp then
+                            TracersButton.Text = 'X'
+                            Tracer.Visible = true
+                            Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 1)
+                            Tracer.To = Vector2.new(Hum.X, Hum.Y)
+                        elseif not TracerEsp then
+                            TracersButton.Text = ''
+                            Tracer.Visible = false
+                        end
+                    else
+                        Tracer.Visible = false
+                    end
+                else
+                    Tracer.Visible = false
+                end
+            end)
+        end)
+    end
 end
 
 RunService.Stepped:Connect(function()
@@ -1386,33 +1495,6 @@ RunService.Stepped:Connect(function()
 		return nil
 	end
 
-	if EspToggle and EspTarget and EspTarget.Character and EspTarget.Character:FindFirstChild'Torso' then
-		local Vec = Vector3.new(0,3,0)
-		local NoVec = Vector3.new(0,0.5,0)
-		local Hum, OnScreen = Camera:WorldToViewportPoint(EspTarget.Character.HumanoidRootPart.Position)
-		local Minus = Camera:WorldToViewportPoint(EspTarget.Character.HumanoidRootPart.Position - Vec)
-		local Plus = Camera:WorldToViewportPoint(EspTarget.Character.HumanoidRootPart.Position + NoVec)
-		if OnScreen then
-			if BasicInfo then
-				EspLabel.Text = 'Name: - '..EspTarget.Name..' Health: - '..math.round(EspTarget.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - EspTarget.Character.Head.Position).magnitude)
-			elseif MorInfoEsp and not BasicInfo then
-				EspLabel.Text = 'Name: - '..EspTarget.Name..' Health: - '..math.round(EspTarget.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - EspTarget.Character.Head.Position).magnitude)..' Test'
-			end
-			if TracerEsp then
-				Tracer.Visible = true
-				Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 1)
-				Tracer.To = Vector2.new(Hum.Y, Hum.Y)
-			elseif SquareEsp then
-				Square.Visible = true
-				Square.Size = Vector2.new(3000 / Hum.Z, Plus.Y - Minus.Y)
-				Square.Position = Vector2.new(Hum.X - Square.Size.X / 2, Hum.Y - Square.Size.Y / 2)
-			elseif CircleEsp then
-				Circle.Visible = true
-				Circle.Size = Vector2.new(3000 / Hum.Z, Plus.Y - Minus.Y)
-				Circle.Position = Vector2.new(Hum.X - Square.Size.X / 2, Hum.Y - Square.Size.Y / 2)
-			end
-		end
-	end
 end)
 
 RunService.Stepped:Connect(function()
@@ -1459,55 +1541,53 @@ RunService.Stepped:Connect(function()
 			CamlockedPart = AbledParts['HumanoidRootPart']
 		end)
 	end
-	if EspToggle then
-		MoreInfoButton.MouseButton1Click:Connect(function()
-			MoreInfoButton.Text = 'X'
-			task.wait(0.2)
-			BasicInfo = false
-			MoreInfoEsp = true
-		end)
-		BasicInfoButton.MouseButton1Click:Connect(function()
-			BasicInfoButton.Text = 'X'
-			task.wait(0.2)
-			MoreInfoEsp = false
-			BasicInfo = true
-		end)
-		RedEspButton.MouseButton1Click:Connect(function()
-			EspColorFrame.Text = 'Red'
-			task.wait(0.2)
-			EspColor = EspColorTable['Red']
-		end)
-		PurpleEspButton.MouseButton1Click:Connect(function()
-			EspColorFrame.Text = 'Royal Purple'
-			task.wait(0.2)
-			EspColor = EspColorTable['Royal Purple']
-		end)
-		YellowEspButton.MouseButton1Click:Connect(function()
-			EspColorFrame.Text = 'Yellow'
-			task.wait(0.2)
-			EspColor = EspColorTable['Yellow']
-		end)
-		OrangeEspButton.MouseButton1Click:Connect(function()
-			EspColorFrame.Text = 'Orange'
-			task.wait(0.2)
-			EspColor = EspColorTable['Orange']
-		end)
-		BlueEspButton.MouseButton1Click:Connect(function()
-			EspColorFrame.Text = 'Blue'
-			task.wait(0.2)
-			EspColor = EspColorTable['Blue']
-		end)
-		GreenEspButton.MouseButton1Click:Connect(function()
-			EspColorFrame.Text = 'Green'
-			task.wait(0.2)
-			EspColor = EspColorTable['Green']
-		end)
-		PinkEspButton.MouseButton1Click:Connect(function()
-			EspColorFrame.Text = 'Pink'
-			task.wait(0.2)
-			EspColor = EspColorTable['Pink']
-		end)
-	end
+	MoreInfoButton.MouseButton1Click:Connect(function()
+		MoreInfoButton.Text = 'X'
+		task.wait(0.2)
+		BasicInfo = false
+		MoreInfoEsp = true
+	end)
+	BasicInfoButton.MouseButton1Click:Connect(function()
+		BasicInfoButton.Text = 'X'
+		task.wait(0.2)
+		MoreInfoEsp = false
+		BasicInfo = true
+	end)
+	RedEspButton.MouseButton1Click:Connect(function()
+		EspColorButton.Text = 'Red'
+		task.wait(0.2)
+		EspColor = EspColorTable['Red']
+	end)
+	PurpleEspButton.MouseButton1Click:Connect(function()
+		EspColorButton.Text = 'Royal Purple'
+		task.wait(0.2)
+		EspColor = EspColorTable['Royal Purple']
+	end)
+	YellowEspButton.MouseButton1Click:Connect(function()
+		EspColorButton.Text = 'Yellow'
+		task.wait(0.2)
+		EspColor = EspColorTable['Yellow']
+	end)
+	OrangeEspButton.MouseButton1Click:Connect(function()
+		EspColorButton.Text = 'Orange'
+		task.wait(0.2)
+		EspColor = EspColorTable['Orange']
+	end)
+	BlueEspButton.MouseButton1Click:Connect(function()
+		EspColorButton.Text = 'Blue'
+		task.wait(0.2)
+		EspColor = EspColorTable['Blue']
+	end)
+	GreenEspButton.MouseButton1Click:Connect(function()
+		EspColorButton.Text = 'Green'
+		task.wait(0.2)
+		EspColor = EspColorTable['Green']
+	end)
+	PinkEspButton.MouseButton1Click:Connect(function()
+		EspColorButton.Text = 'Pink'
+		task.wait(0.2)
+		EspColor = EspColorTable['Pink']
+	end)
 end)
 
 UserInputService.InputBegan:Connect(function(Action, NoChat)
@@ -1611,6 +1691,28 @@ TracersButton.MouseButton1Click:Connect(function()
 	end
 end)
 
+MoreInfoButton.MouseButton1Click:Connect(function()
+	MorInfoEsp = not MorInfoEsp
+	UserNotifications('Pyrus', 'More Info Esp is now '..tostring(MorInfoEsp))
+	if MoreInfoEsp then
+		MoreInfoButton = 'X'
+		task.wait(0.2)
+	elseif not MoreInfoEsp then
+		MoreInfoButton.Text = ''
+	end
+end)
+
+BasicInfoButton.MouseButton1Click:Connect(function()
+	BasicInfo = not BasicInfo
+	UserNotifications('Pyrus', 'Basic Info Esp is now '..tostring(BasicInfo))
+	if BasicInfo then
+		BasicInfoButton.Text = 'X'
+		task.wait(0.2)
+	elseif not BasicInfo then
+		BasicInfoButton.Text = ''
+	end
+end)
+
 SprintMethodsButton.MouseButton1Click:Connect(function()
 	SprintGui = not SprintGui
 	if SprintGui then
@@ -1651,16 +1753,10 @@ ShapesButton.MouseButton1Click:Connect(function()
 	ShapesEsp = not ShapesEsp
 	if ShapesEsp then
 		ShapesButton.Text = 'X'
-		task.wait(0.2)
-		if EspMethod == 'Circle' then
-			CircleEsp = true
-			SquareEsp = false
-		elseif EspMethod == 'Square' then
-			CircleEsp = false
-			SquareEsp = true
-		end
+		RectangeEsp = true
 	elseif not ShapesEsp then
 		ShapesButton.Text = ''
+		RectangeEsp = false
 	end
 end)
 
@@ -1676,8 +1772,8 @@ end)
 EspTargetBox.FocusLost:Connect(function()
 	if string.len(EspTargetBox.Text) > 0 then
 		EspTarget = searchdata(string.upper(string.sub(tostring(EspTargetBox.Text),1,1)))
-		if EspTarget then
-			EspToggle = true
+        if EspTarget then
+            Esp(EspTarget)
 		end
 	end
 end)
@@ -1685,4 +1781,3 @@ end)
 local Sound = Instance.new('Sound')
 Sound.Parent = game:GetService('Workspace')
 Sound.SoundId = UserJoins
-Sound.Playing = true
