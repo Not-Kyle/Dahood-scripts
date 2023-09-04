@@ -12,6 +12,7 @@ getgenv().RunService = game:GetService'RunService'
 getgenv().UserInputService = game:GetService'UserInputService'
 getgenv().UserNotifications = function(title, text, time) game.StarterGui:SetCore("SendNotification", {Title = title; Text = text; Icon = 'rbxassetid://13941412659'; Duration = time;}) end
 getgenv().Camera = game:GetService'Workspace'.CurrentCamera
+getgenv().StarterGui = game:GetService'StarterGui'
 
 -- | Booleans | --
 
@@ -22,11 +23,12 @@ local Camlock = false
 local CamlockGui = false
 local CFrameSprint = false
 local CFrameSprinting = false
+local DeepInfo = false
 local EspColoringFrame = false
 local EspShapesFrameToggle = false
 local LookVectorSprint = false
 local LookVectorSprinting = false
-local MorInfoEsp = false
+local MoreInfoEsp = false
 local RectangeEsp = true
 local ShapesEsp = true
 local Sprint = false
@@ -38,7 +40,8 @@ local TracerEsp = true
 local SprintSpeedLookVector = 200;
 local BlinkSpeed = 8;
 local CFrameSpeed = 5;
-local Thickness = 1;
+local ThicknessDraw = 2;
+local Radius = 70;
 
 -- | Hotkeys | --
 
@@ -50,12 +53,13 @@ local CamlockKey = 'V'
 -- | Nils | --
 
 local CamlockTarget;
-local CamlockedPart;
+local DeepInfoTarget;
 local EspColor;
 local EspTarget;
 
 -- | Methods | --
 
+local CamlockedPart = 'HumanoidRootPart';
 local EspMethod = 'Rectangle'
 
 -- | Sounds | --
@@ -86,6 +90,15 @@ local EspColorTable = {
 	['Green'] = Color3.fromRGB(0,255,0);
 	['Pink'] = Color3.fromRGB(255, 85, 255);
 }
+
+local ChatMsg = {
+    ['Color'] = Color3.fromRGB(85,0,255);
+    ['Font'] = Enum.Font.Code;
+    ['TextSize'] = 20;
+    ['Text'] = 'Pyrus';
+}
+
+
 -- | Gui | --
 
 local Yas = Instance.new("ScreenGui")
@@ -99,7 +112,7 @@ BackFrameToStatusFrame.Parent = Yas
 BackFrameToStatusFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 BackFrameToStatusFrame.BackgroundTransparency = 1.000
 BackFrameToStatusFrame.Position = UDim2.new(0.2, 0, 0.803837836, 0)
-BackFrameToStatusFrame.Size = UDim2.new(0, 233, 0, 195)
+BackFrameToStatusFrame.Size = UDim2.new(0, 233, 0, 220)
 BackFrameToStatusFrame.Image = "rbxassetid://3570695787"
 BackFrameToStatusFrame.ImageColor3 = Color3.fromRGB(0, 0, 0)
 BackFrameToStatusFrame.ScaleType = Enum.ScaleType.Slice
@@ -113,7 +126,7 @@ StatusFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 StatusFrame.BorderColor3 = Color3.fromRGB(85, 0, 255)
 StatusFrame.BorderSizePixel = 2
 StatusFrame.Position = UDim2.new(0.0257510729, 0, 0.0307692308, 0)
-StatusFrame.Size = UDim2.new(0, 221, 0, 189)
+StatusFrame.Size = UDim2.new(0, 221, 0, 205)
 
 local Gui = Instance.new("ImageLabel")
 Gui.Name = "gui"
@@ -1238,6 +1251,391 @@ SprintText.TextColor3 = Color3.fromRGB(255, 255, 255)
 SprintText.TextSize = 14.000
 SprintText.TextXAlignment = Enum.TextXAlignment.Left
 
+local BackFrameMoreInfoFrameEsp = Instance.new("ImageLabel")
+BackFrameMoreInfoFrameEsp.Name = "BackFrameMoreInfoFrameEsp"
+BackFrameMoreInfoFrameEsp.Parent = Yas
+BackFrameMoreInfoFrameEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+BackFrameMoreInfoFrameEsp.BackgroundTransparency = 1.000
+BackFrameMoreInfoFrameEsp.Position = UDim2.new(0.702685297, 0, 0.789889336, 0)
+BackFrameMoreInfoFrameEsp.Size = UDim2.new(0, 400, 0, 220)
+BackFrameMoreInfoFrameEsp.Image = "rbxassetid://3570695787"
+BackFrameMoreInfoFrameEsp.ImageColor3 = Color3.fromRGB(0, 0, 0)
+BackFrameMoreInfoFrameEsp.ScaleType = Enum.ScaleType.Slice
+BackFrameMoreInfoFrameEsp.SliceCenter = Rect.new(100, 100, 100, 100)
+BackFrameMoreInfoFrameEsp.SliceScale = 0.040
+BackFrameMoreInfoFrameEsp.Visible = false
+
+local MoreInfoFrameEsp = Instance.new("Frame")
+MoreInfoFrameEsp.Name = "MoreInfoFrameEsp"
+MoreInfoFrameEsp.Parent = BackFrameMoreInfoFrameEsp
+MoreInfoFrameEsp.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MoreInfoFrameEsp.BorderColor3 = Color3.fromRGB(85, 0, 255)
+MoreInfoFrameEsp.BorderSizePixel = 2
+MoreInfoFrameEsp.Position = UDim2.new(0.0149999997, 0, 0.0309999119, 0)
+MoreInfoFrameEsp.Size = UDim2.new(0, 388, 0, 206)
+
+local FirstLabelEsp = Instance.new("TextLabel")
+FirstLabelEsp.Name = "FirstLabelEsp"
+FirstLabelEsp.Parent = MoreInfoFrameEsp
+FirstLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+FirstLabelEsp.BackgroundTransparency = 1.000
+FirstLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FirstLabelEsp.BorderSizePixel = 0
+FirstLabelEsp.Size = UDim2.new(0, 195, 0, 20)
+FirstLabelEsp.Font = Enum.Font.Highway
+FirstLabelEsp.Text = "  AccountAge:"
+FirstLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+FirstLabelEsp.TextSize = 14.000
+FirstLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local SecondLabelEsp = Instance.new("TextLabel")
+SecondLabelEsp.Name = "SecondLabelEsp"
+SecondLabelEsp.Parent = MoreInfoFrameEsp
+SecondLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SecondLabelEsp.BackgroundTransparency = 1.000
+SecondLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SecondLabelEsp.BorderSizePixel = 0
+SecondLabelEsp.Position = UDim2.new(0, 0, 0.105820104, 0)
+SecondLabelEsp.Size = UDim2.new(0, 194, 0, 20)
+SecondLabelEsp.Font = Enum.Font.Highway
+SecondLabelEsp.Text = "  UserId:"
+SecondLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+SecondLabelEsp.TextSize = 14.000
+SecondLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local ThirdLabelEsp = Instance.new("TextLabel")
+ThirdLabelEsp.Name = "ThirdLabelEsp"
+ThirdLabelEsp.Parent = MoreInfoFrameEsp
+ThirdLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ThirdLabelEsp.BackgroundTransparency = 1.000
+ThirdLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ThirdLabelEsp.BorderSizePixel = 0
+ThirdLabelEsp.Position = UDim2.new(0, 0, 0.211640209, 0)
+ThirdLabelEsp.Size = UDim2.new(0, 195, 0, 20)
+ThirdLabelEsp.Font = Enum.Font.Highway
+ThirdLabelEsp.Text = "  ForceField:"
+ThirdLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+ThirdLabelEsp.TextSize = 14.000
+ThirdLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local FourthLabelEsp = Instance.new("TextLabel")
+FourthLabelEsp.Name = "FourthLabelEsp"
+FourthLabelEsp.Parent = MoreInfoFrameEsp
+FourthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+FourthLabelEsp.BackgroundTransparency = 1.000
+FourthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FourthLabelEsp.BorderSizePixel = 0
+FourthLabelEsp.Position = UDim2.new(0, 0, 0.317460328, 0)
+FourthLabelEsp.Size = UDim2.new(0, 195, 0, 20)
+FourthLabelEsp.Font = Enum.Font.Highway
+FourthLabelEsp.Text = "  DB-Shotgun:"
+FourthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+FourthLabelEsp.TextSize = 14.000
+FourthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local FifthLabelEsp = Instance.new("TextLabel")
+FifthLabelEsp.Name = "FifthLabelEsp"
+FifthLabelEsp.Parent = MoreInfoFrameEsp
+FifthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+FifthLabelEsp.BackgroundTransparency = 1.000
+FifthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FifthLabelEsp.BorderSizePixel = 0
+FifthLabelEsp.Position = UDim2.new(0, 0, 0.423280418, 0)
+FifthLabelEsp.Size = UDim2.new(0, 195, 0, 20)
+FifthLabelEsp.Font = Enum.Font.Highway
+FifthLabelEsp.Text = "  Ak-47:"
+FifthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+FifthLabelEsp.TextSize = 14.000
+FifthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local SixthLabelEsp = Instance.new("TextLabel")
+SixthLabelEsp.Name = "SixthLabelEsp"
+SixthLabelEsp.Parent = MoreInfoFrameEsp
+SixthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SixthLabelEsp.BackgroundTransparency = 1.000
+SixthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SixthLabelEsp.BorderSizePixel = 0
+SixthLabelEsp.Position = UDim2.new(0, 0, 0.529100537, 0)
+SixthLabelEsp.Size = UDim2.new(0, 195, 0, 20)
+SixthLabelEsp.Font = Enum.Font.Highway
+SixthLabelEsp.Text = "  Shotgun:"
+SixthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+SixthLabelEsp.TextSize = 14.000
+SixthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local SeventhLabelEsp = Instance.new("TextLabel")
+SeventhLabelEsp.Name = "SeventhLabelEsp"
+SeventhLabelEsp.Parent = MoreInfoFrameEsp
+SeventhLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SeventhLabelEsp.BackgroundTransparency = 1.000
+SeventhLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SeventhLabelEsp.BorderSizePixel = 0
+SeventhLabelEsp.Position = UDim2.new(0, 0, 0.634920657, 0)
+SeventhLabelEsp.Size = UDim2.new(0, 195, 0, 20)
+SeventhLabelEsp.Font = Enum.Font.Highway
+SeventhLabelEsp.Text = "  Revolver:"
+SeventhLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+SeventhLabelEsp.TextSize = 14.000
+SeventhLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local EighthLabelEsp = Instance.new("TextLabel")
+EighthLabelEsp.Name = "EighthLabelEsp"
+EighthLabelEsp.Parent = MoreInfoFrameEsp
+EighthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EighthLabelEsp.BackgroundTransparency = 1.000
+EighthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EighthLabelEsp.BorderSizePixel = 0
+EighthLabelEsp.Position = UDim2.new(0.00515463902, 0, 0.740740716, 0)
+EighthLabelEsp.Size = UDim2.new(0, 193, 0, 20)
+EighthLabelEsp.Font = Enum.Font.Highway
+EighthLabelEsp.Text = "  Knife:"
+EighthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+EighthLabelEsp.TextSize = 14.000
+EighthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local NinthLabelEsp = Instance.new("TextLabel")
+NinthLabelEsp.Name = "NinthLabelEsp"
+NinthLabelEsp.Parent = MoreInfoFrameEsp
+NinthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+NinthLabelEsp.BackgroundTransparency = 1.000
+NinthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+NinthLabelEsp.BorderSizePixel = 0
+NinthLabelEsp.Position = UDim2.new(0.00515463902, 0, 0.846560836, 0)
+NinthLabelEsp.Size = UDim2.new(0, 193, 0, 20)
+NinthLabelEsp.Font = Enum.Font.Highway
+NinthLabelEsp.Text = "  TacticalShotgun:"
+NinthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+NinthLabelEsp.TextSize = 14.000
+NinthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local TenthLabelEsp = Instance.new("TextLabel")
+TenthLabelEsp.Name = "TenthLabelEsp"
+TenthLabelEsp.Parent = MoreInfoFrameEsp
+TenthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TenthLabelEsp.BackgroundTransparency = 1.000
+TenthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TenthLabelEsp.BorderSizePixel = 0
+TenthLabelEsp.Position = UDim2.new(0.518041253, 0, 0, 0)
+TenthLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+TenthLabelEsp.Font = Enum.Font.Highway
+TenthLabelEsp.Text = "  Armor:"
+TenthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+TenthLabelEsp.TextSize = 14.000
+TenthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local EleventhLabelEsp = Instance.new("TextLabel")
+EleventhLabelEsp.Name = "EleventhLabelEsp"
+EleventhLabelEsp.Parent = MoreInfoFrameEsp
+EleventhLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EleventhLabelEsp.BackgroundTransparency = 1.000
+EleventhLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EleventhLabelEsp.BorderSizePixel = 0
+EleventhLabelEsp.Position = UDim2.new(0.518041253, 0, 0.105820104, 0)
+EleventhLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+EleventhLabelEsp.Font = Enum.Font.Highway
+EleventhLabelEsp.Text = "  Currency:"
+EleventhLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+EleventhLabelEsp.TextSize = 14.000
+EleventhLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local TelevthLabelEsp = Instance.new("TextLabel")
+TelevthLabelEsp.Name = "TelevthLabelEsp"
+TelevthLabelEsp.Parent = MoreInfoFrameEsp
+TelevthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TelevthLabelEsp.BackgroundTransparency = 1.000
+TelevthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TelevthLabelEsp.BorderSizePixel = 0
+TelevthLabelEsp.Position = UDim2.new(0.518041253, 0, 0.211640209, 0)
+TelevthLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+TelevthLabelEsp.Font = Enum.Font.Highway
+TelevthLabelEsp.Text = "  Possible Age:"
+TelevthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+TelevthLabelEsp.TextSize = 14.000
+TelevthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local ThirteethLabelEsp = Instance.new("TextLabel")
+ThirteethLabelEsp.Name = "ThirteethLabelEsp"
+ThirteethLabelEsp.Parent = MoreInfoFrameEsp
+ThirteethLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ThirteethLabelEsp.BackgroundTransparency = 1.000
+ThirteethLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ThirteethLabelEsp.BorderSizePixel = 0
+ThirteethLabelEsp.Position = UDim2.new(0.518041253, 0, 0.317460328, 0)
+ThirteethLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+ThirteethLabelEsp.Font = Enum.Font.Highway
+ThirteethLabelEsp.Text = "  Possible Continent:"
+ThirteethLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+ThirteethLabelEsp.TextSize = 14.000
+ThirteethLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local FourteenthLabelEsp = Instance.new("TextLabel")
+FourteenthLabelEsp.Name = "FourteenthLabelEsp"
+FourteenthLabelEsp.Parent = MoreInfoFrameEsp
+FourteenthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+FourteenthLabelEsp.BackgroundTransparency = 1.000
+FourteenthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FourteenthLabelEsp.BorderSizePixel = 0
+FourteenthLabelEsp.Position = UDim2.new(0.518041253, 0, 0.423280418, 0)
+FourteenthLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+FourteenthLabelEsp.Font = Enum.Font.Highway
+FourteenthLabelEsp.Text = "  Exploiter: "
+FourteenthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+FourteenthLabelEsp.TextSize = 14.000
+FourteenthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local FiftheenthLabelEsp = Instance.new("TextLabel")
+FiftheenthLabelEsp.Name = "FiftheenthLabelEsp"
+FiftheenthLabelEsp.Parent = MoreInfoFrameEsp
+FiftheenthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+FiftheenthLabelEsp.BackgroundTransparency = 1.000
+FiftheenthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FiftheenthLabelEsp.BorderSizePixel = 0
+FiftheenthLabelEsp.Position = UDim2.new(0.518041253, 0, 0.529100537, 0)
+FiftheenthLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+FiftheenthLabelEsp.Font = Enum.Font.Highway
+FiftheenthLabelEsp.Text = "  Possible E-Dater:"
+FiftheenthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+FiftheenthLabelEsp.TextSize = 14.000
+FiftheenthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local SixteenthLabelEsp = Instance.new("TextLabel")
+SixteenthLabelEsp.Name = "SixteenthLabelEsp"
+SixteenthLabelEsp.Parent = MoreInfoFrameEsp
+SixteenthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SixteenthLabelEsp.BackgroundTransparency = 1.000
+SixteenthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SixteenthLabelEsp.BorderSizePixel = 0
+SixteenthLabelEsp.Position = UDim2.new(0.518041253, 0, 0.634920657, 0)
+SixteenthLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+SixteenthLabelEsp.Font = Enum.Font.Highway
+SixteenthLabelEsp.Text = "  Warnings:"
+SixteenthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+SixteenthLabelEsp.TextSize = 14.000
+SixteenthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local SeventeenthLabelEsp = Instance.new("TextLabel")
+SeventeenthLabelEsp.Name = "SeventeenthLabelEsp"
+SeventeenthLabelEsp.Parent = MoreInfoFrameEsp
+SeventeenthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SeventeenthLabelEsp.BackgroundTransparency = 1.000
+SeventeenthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SeventeenthLabelEsp.BorderSizePixel = 0
+SeventeenthLabelEsp.Position = UDim2.new(0.518041253, 0, 0.740740716, 0)
+SeventeenthLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+SeventeenthLabelEsp.Font = Enum.Font.Highway
+SeventeenthLabelEsp.Text = "  RPG-User:"
+SeventeenthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+SeventeenthLabelEsp.TextSize = 14.000
+SeventeenthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local EighteenthLabelEsp = Instance.new("TextLabel")
+EighteenthLabelEsp.Name = "EighteenthLabelEsp"
+EighteenthLabelEsp.Parent = MoreInfoFrameEsp
+EighteenthLabelEsp.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EighteenthLabelEsp.BackgroundTransparency = 1.000
+EighteenthLabelEsp.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EighteenthLabelEsp.BorderSizePixel = 0
+EighteenthLabelEsp.Position = UDim2.new(0.518041253, 0, 0.846560836, 0)
+EighteenthLabelEsp.Size = UDim2.new(0, 187, 0, 20)
+EighteenthLabelEsp.Font = Enum.Font.Highway
+EighteenthLabelEsp.Text = "  Pyrus User:"
+EighteenthLabelEsp.TextColor3 = Color3.fromRGB(255, 255, 255)
+EighteenthLabelEsp.TextSize = 14.000
+EighteenthLabelEsp.TextXAlignment = Enum.TextXAlignment.Left
+
+local ScrollingFrameSecondCombat = Instance.new("ScrollingFrame")
+ScrollingFrameSecondCombat.Name = "ScrollingFrameSecondCombat"
+ScrollingFrameSecondCombat.Parent = BackFrameCombat
+ScrollingFrameSecondCombat.Active = true
+ScrollingFrameSecondCombat.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ScrollingFrameSecondCombat.BackgroundTransparency = 1.000
+ScrollingFrameSecondCombat.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ScrollingFrameSecondCombat.BorderSizePixel = 0
+ScrollingFrameSecondCombat.Position = UDim2.new(0.510775864, 0, 0, 0)
+ScrollingFrameSecondCombat.Size = UDim2.new(0, 222, 0, 527)
+ScrollingFrameSecondCombat.ScrollBarThickness = 4
+ScrollingFrameSecondCombat.ScrollBarImageColor3 = Color3.fromRGB(85,0,255)
+
+local DeepInfoFrame = Instance.new("Frame")
+DeepInfoFrame.Name = "DeepInfoFrame"
+DeepInfoFrame.Parent = ScrollingFrameSecondCombat
+DeepInfoFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+DeepInfoFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+DeepInfoFrame.BorderSizePixel = 0
+DeepInfoFrame.Position = UDim2.new(0.00300007034, 0, 0.0100000082, 0)
+DeepInfoFrame.Size = UDim2.new(0, 215, 0, 104)
+
+local DeepInfoTitle = Instance.new("TextLabel")
+DeepInfoTitle.Name = "DeepInfoTitle"
+DeepInfoTitle.Parent = DeepInfoFrame
+DeepInfoTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoTitle.BackgroundTransparency = 1.000
+DeepInfoTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+DeepInfoTitle.BorderSizePixel = 0
+DeepInfoTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779518741, 0)
+DeepInfoTitle.Size = UDim2.new(0, 60, 0, 19)
+DeepInfoTitle.Font = Enum.Font.Highway
+DeepInfoTitle.Text = "In-Depth Info"
+DeepInfoTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoTitle.TextSize = 13.000
+DeepInfoTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local DeepInfoTargetBox = Instance.new("TextBox")
+DeepInfoTargetBox.Name = "DeepInfoTargetBox"
+DeepInfoTargetBox.Parent = DeepInfoFrame
+DeepInfoTargetBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+DeepInfoTargetBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+DeepInfoTargetBox.BorderSizePixel = 0
+DeepInfoTargetBox.Position = UDim2.new(0.0325581394, 0, 0.417796791, 0)
+DeepInfoTargetBox.Size = UDim2.new(0, 200, 0, 21)
+DeepInfoTargetBox.Font = Enum.Font.Highway
+DeepInfoTargetBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoTargetBox.PlaceholderText = "Enter Player Username!"
+DeepInfoTargetBox.Text = ""
+DeepInfoTargetBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoTargetBox.TextSize = 14.000
+
+local DeepInfoTargetText = Instance.new("TextLabel")
+DeepInfoTargetText.Name = "DeepInfoTargetText"
+DeepInfoTargetText.Parent = DeepInfoTargetBox
+DeepInfoTargetText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoTargetText.BackgroundTransparency = 1.000
+DeepInfoTargetText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+DeepInfoTargetText.BorderSizePixel = 0
+DeepInfoTargetText.Position = UDim2.new(0.264999986, 0, -1.07843161, 0)
+DeepInfoTargetText.Size = UDim2.new(0, 85, 0, 15)
+DeepInfoTargetText.Font = Enum.Font.Highway
+DeepInfoTargetText.Text = "In-Depth Info Target"
+DeepInfoTargetText.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoTargetText.TextSize = 14.000
+
+local DeepInfoButton = Instance.new("TextButton")
+DeepInfoButton.Name = "DeepInfoButton"
+DeepInfoButton.Parent = DeepInfoFrame
+DeepInfoButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+DeepInfoButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoButton.Position = UDim2.new(0.0700000003, 0, 0.75, 0)
+DeepInfoButton.Size = UDim2.new(0, 13, 0, 13)
+DeepInfoButton.Font = Enum.Font.Highway
+DeepInfoButton.Text = ""
+DeepInfoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoButton.TextSize = 14.000
+
+local DeepInfoText = Instance.new("TextLabel")
+DeepInfoText.Name = "DeepInfoText"
+DeepInfoText.Parent = DeepInfoButton
+DeepInfoText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoText.BackgroundTransparency = 1.000
+DeepInfoText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+DeepInfoText.BorderSizePixel = 0
+DeepInfoText.Position = UDim2.new(1.15384614, 0, 0, 0)
+DeepInfoText.Size = UDim2.new(0, 52, 0, 13)
+DeepInfoText.Font = Enum.Font.Highway
+DeepInfoText.Text = " - In-Depth Info"
+DeepInfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
+DeepInfoText.TextSize = 14.000
+DeepInfoText.TextXAlignment = Enum.TextXAlignment.Left
+
 CombatButton.MouseButton1Click:Connect(function()
     BackFrameCombat.Visible = not BackFrameCombat.Visible
     BackFrameMisc.Visible = false
@@ -1260,11 +1658,12 @@ local function Chat()
 	local ChatSpy = LocalPlayer.PlayerGui.Chat.Frame
 	ChatSpy.ChatChannelParentFrame.Visible = true 
 	ChatSpy.ChatBarParentFrame.Position = ChatSpy.ChatChannelParentFrame.Position + UDim2.new(UDim.new(), ChatSpy.ChatChannelParentFrame.Size.Y)
+    StarterGui:SetCore('ChatMakeSystemMessage', ChatMsg)
 end
 
 local function searchdata(ply : string)
 	for i,v in next, Players:GetPlayers() do 
-		if string.sub(string.lower(v.DisplayName), 1, string.len(ply)) == string.lower(ply) then 
+		if string.sub(string.lower(v.Name), 1, string.len(ply)) == string.lower(ply) then 
 			return v
 		end
 	end
@@ -1301,11 +1700,9 @@ local function Esp(Plr)
         EspLabel.ZIndex = 1
 
         Tracer.Visible = true
-        Tracer.Thickness = Thickness
         Tracer.Transparency = 1
 
         Box.Visible = true
-        Box.Thickness = Thickness
         Box.Transparency = 1
         Box.Filled = false
 
@@ -1316,7 +1713,8 @@ local function Esp(Plr)
 				EspLabel.TextColor3 = EspColor
 				Tracer.Color = EspColor
                 Box.Color = EspColor
-                BoxOutline.Color = EspColor
+                Box.Thickness = ThicknessDraw
+                Tracer.Thickness = ThicknessDraw
                 local Hum, OnScreen = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position)
                 local Head = Camera:WorldToViewportPoint(Plr.Character.Head.Position + NoVec)
                 local Division = 2200
@@ -1325,9 +1723,9 @@ local function Esp(Plr)
                     if BasicInfo then
                         BasicInfoButton.Text = "X"
                         MoreInfoButton.Text = ""
-                        MorInfoEsp = false
+                        MoreInfoEsp = false
                         EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)
-                    elseif MorInfoEsp then
+                    elseif MoreInfoEsp then
                         BasicInfo = false
                         BasicInfoButton.Text = ""
                         MoreInfoButton.Text = "X"
@@ -1362,67 +1760,228 @@ local function Esp(Plr)
             Plr.CharacterAdded:connect(function()
             task.wait(0.1)
             local BillBoard = Instance.new('BillboardGui', Plr.Character.Head)
-			local EspLabel = Instance.new('TextLabel', BillBoard)
-			local Tracer = Drawing.new('Line')
+            local EspLabel = Instance.new('TextLabel', BillBoard)
+            local Tracer = Drawing.new('Line')
+            local Box = Drawing.new('Square')
+            local BoxOutline = Drawing.new('Square')
 
-			BillBoard.Name = 'Bill'
-			BillBoard.Adornee = part
-			BillBoard.AlwaysOnTop = true
-			BillBoard.Size = UDim2.new(0,100,0,100)
-			BillBoard.StudsOffset = Vector3.new(0,1.3,0)
+            BillBoard.Name = 'Bill'
+            BillBoard.Adornee = part
+            BillBoard.AlwaysOnTop = true
+            BillBoard.Size = UDim2.new(0,100,0,100)
+            BillBoard.StudsOffset = Vector3.new(0,1.3,0)
 
-			EspLabel.Name = 'Esp'
-			EspLabel.BackgroundColor3 = Color3.fromRGB(0,0,0)
-			EspLabel.BackgroundTransparency = 1
-			EspLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
-			EspLabel.BorderSizePixel = 1
-			EspLabel.Size = UDim2.new(1,0,0,40)
-			EspLabel.Font = Enum.Font.Code
-			EspLabel.TextSize = 12
-			EspLabel.ZIndex = 1
+            EspLabel.Name = 'Esp'
+            EspLabel.BackgroundColor3 = Color3.fromRGB(0,0,0)
+            EspLabel.BackgroundTransparency = 1
+            EspLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+            EspLabel.BorderSizePixel = 1
+            EspLabel.Size = UDim2.new(1,0,0,40)
+            EspLabel.Font = Enum.Font.Code
+            EspLabel.TextSize = 12
+            EspLabel.ZIndex = 1
 
-			Tracer.Thickness = Thickness
-			Tracer.Transparency = 1
+            Tracer.Visible = true
+            Tracer.Transparency = 1
 
-			RunService.RenderStepped:Connect(function()
-            if Plr and Plr.Character and Plr.Character:FindFirstChild'Humanoid' then
-                local Vec = Vector3.new(0,3,0)
-                local NoVec = Vector3.new(0,0.5,0)
-				EspLabel.TextColor3 = EspColor
-				Tracer.Color = EspColor
-                local Hum, OnScreen = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position)
-                local Minus = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position - Vec)
-                local Plus = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position + NoVec)
-                    if BasicInfo then
-                        BasicInfoButton.Text = "X"
-                        MoreInfoButton.Text = ""
-                        MorInfoEsp = false
-                        EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)
-                    elseif MorInfoEsp then
-                        BasicInfo = false
-                        BasicInfoButton.Text = ""
-                        MoreInfoButton.Text = "X"
-                        EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)..' Test'
-                    end
-                    if OnScreen then
-                        if TracerEsp then
-                            TracersButton.Text = 'X'
-                            Tracer.Visible = true
-                            Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 1)
-                            Tracer.To = Vector2.new(Hum.X, Hum.Y)
-                        elseif not TracerEsp then
-                            TracersButton.Text = ''
+            Box.Visible = true
+            Box.Transparency = 1
+            Box.Filled = false
+
+            RunService.RenderStepped:Connect(function()
+                if Plr and Plr.Character and Plr.Character:FindFirstChild'Humanoid' then
+                    local Vec = Vector3.new(0,3,0)
+                    local NoVec = Vector3.new(0,0.5,0)
+                    EspLabel.TextColor3 = EspColor
+                    Tracer.Color = EspColor
+                    Box.Color = EspColor
+                    Box.Thickness = ThicknessDraw
+                    Tracer.Thickness = ThicknessDraw
+                    local Hum, OnScreen = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position)
+                    local Head = Camera:WorldToViewportPoint(Plr.Character.Head.Position + NoVec)
+                    local Division = 2200
+                    local Minus = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position - Vec)
+                    local Plus = Camera:WorldToViewportPoint(Plr.Character.HumanoidRootPart.Position + NoVec)
+                        if BasicInfo then
+                            BasicInfoButton.Text = "X"
+                            MoreInfoButton.Text = ""
+                            MoreInfoEsp = false
+                            EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)
+                        elseif MoreInfoEsp then
+                            BasicInfo = false
+                            BasicInfoButton.Text = ""
+                            MoreInfoButton.Text = "X"
+                            EspLabel.Text = 'Name: - '..Plr.Name..' Health: - '..math.round(Plr.Character.Humanoid.Health)..' \n Pos: - '..math.round((LocalPlayer.Character.Head.Position - Plr.Character.Head.Position).magnitude)..' Test'
+                        end
+                        if OnScreen then
+                            if TracerEsp then
+                                TracersButton.Text = 'X'
+                                Tracer.Visible = true
+                                Tracer.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 1)
+                                Tracer.To = Vector2.new(Hum.X, Hum.Y)
+                            elseif not TracerEsp then
+                                TracersButton.Text = ''
+                                Tracer.Visible = false
+                            end
+                            if RectangeEsp then
+                                Box.Visible = true
+                                Box.Size = Vector2.new(Division / Hum.Z, Head.Y - Minus.Y, Hum.X)
+                                Box.Position = Vector2.new(Hum.X - Box.Size.X / 2, Hum.Y - Box.Size.Y / 2)
+                            elseif not RectangeEsp then
+                                Box.Visible = false
+                            end
+                        else
                             Tracer.Visible = false
+                            Box.Visible = false
                         end
                     else
-                        Tracer.Visible = false
-                    end
-                else
                     Tracer.Visible = false
+                    Box.Visible = false
                 end
             end)
         end)
     end
+end
+
+local function DeepInfoFunction(Host)
+    FirstLabelEsp.Text = "  AccountAge: "..Host.AccountAge.." Days Old"
+    SecondLabelEsp.Text = "  UserId: "..Host.UserId
+    RunService.Stepped:Connect(function()
+        if Host.Character:FindFirstChild'ForceField' then
+            ThirdLabelEsp.Text = "  ForceField: true"
+        elseif not Host.Character:FindFirstChild'ForceField' then
+            ThirdLabelEsp.Text = "  ForceField: false"
+        end
+        if Host.Backpack:FindFirstChild'[Knife]' then
+            EighthLabelEsp.Text = "  Knife: true"
+        elseif not Host.Backpack:FindFirstChild'[Knife]' then
+            EighthLabelEsp.Text = "  Knife: false"
+        end
+        if Host.Backpack:FindFirstChild'[Double-Barrel SG]' then
+            FourthLabelEsp.Text = "  DB-Shotgun: true"
+        elseif not Host.Backpack:FindFirstChild'[Double-Barrel SG]' then
+            FourthLabelEsp.Text = "  DB-Shotgun: false"
+        end
+        if Host.Backpack:FindFirstChild'[AK47]' then
+            FifthLabelEsp.Text = "  Ak-47: true"
+        elseif not Host.Backpack:FindFirstChild'[AK47]' then
+            FifthLabelEsp.Text = "  Ak-47: false"
+        end
+        if Host.Backpack:FindFirstChild'[AK47]' then
+            FifthLabelEsp.Text = "  Ak-47: true"
+        elseif not Host.Backpack:FindFirstChild'[AK47]' then
+            FifthLabelEsp.Text = "  Ak-47: false"
+        end
+        if Host.Backpack:FindFirstChild'[Shotgun]' then
+            SixthLabelEsp.Text = "  Shotgun: true" 
+        elseif not Host.Backpack:FindFirstChild'[Shotgun]' then
+            SixthLabelEsp.Text = "  Shotgun: false"
+        end
+        if Host.Backpack:FindFirstChild'[Revolver]' then
+            SeventhLabelEsp.Text = "  Revolver: true"
+        elseif not Host.Backpack:FindFirstChild'[Revolver]' then
+            SeventhLabelEsp.Text = "  Revolver: false"
+        end
+        if Host.Backpack:FindFirstChild'[TacticalShotgun]' then
+            NinthLabelEsp.Text = "  TacticalShotgun: true"
+        elseif not Host.Backpack:FindFirstChild'[TacticalShotgun]' then
+            NinthLabelEsp.Text = "  TacticalShotgun: false"
+        end
+        pcall(function()
+            if Host.DataFolder:FindFirstChild'Currency' then 
+                EleventhLabelEsp.Text = "  Currency: "..Host.DataFolder.Currency.Value
+            end
+        end)
+        if Host and Host.Character then
+            local age16 = {'die', 'kys', 'ihu', 'i hate you', 'lol', 'wsg', 'df', 'cry', 'ur weird', 'weird', 'btc', 'clipped', 'rec', 'clip'}
+            local age15 = {'tf up', 'thot', 'wap', 'corny', 'smh', 'ofc', 'NPC', 'rizz', 'gas', 'nca', 'nc', 'cappin', 'cake', 'on god', 'on momma', 'omm', 'cap', 'no cap', 'BARK', 'furry', 'furries', 'im sad', 'depressed', 'pressed', 'skid', 'slay', 'emo', 'periodt', 'tool', 'fatahh', 'smash', 'RQ', 'exploiter', 'asl', 'no life', 'kid', 'roaches', 'npcs'}
+            local age14 = {'bra', 'mammy', 'mami', 'daddy', 'daddi', 'son', 'seed', 'CUTEE', 'CUTE', 'WHA', 'wha', 'MOMMY', 'daddy', 'shooter', 'cuh', 'ez', 'nn', 'yur', 'XD', 'good son', 'bet', 'sleep on', 'deadahh', 'trap', 'jit', 'yeet', 'bae', 'beef', 'plug', 'gucci', 'IM DEAD', 'geeking', 'dope', 'finna', 'mood', 'shook', 'fire', 'pack', 'lookin ahh', 'lookin ah', 'lookin', 'silly', 'MAFRAKA', 'random', 'slayyy', 'pookie', 'blud'}
+            local age13 = {'fam', 'sus', 'sussy', 'baka', 'sussy baka', 'YEET', 'bae', 'AF', 'oop', 'bih', 'bussin', 'ded', 'drip', 'karen', 'hits different', 'ok boomer', 'salty', 'simp', 'sis', 'thicc', 'vibing', 'zaddy', 'YAS', 'vsco', 'noob', 'e kitten'}
+            Host.Chatted:Connect(function(cringewords)
+                if table.find(age13,cringewords:lower()) then
+                    TelevthLabelEsp.Text = "  Possible Age: 13"
+                elseif table.find(age14,cringewords:lower()) then
+                    TelevthLabelEsp.Text = "  Possible Age: 14"
+                elseif table.find(age15,cringewords:lower()) then
+                    TelevthLabelEsp.Text = "  Possible Age: 15"
+                elseif table.find(age16,cringewords:lower()) then
+                    TelevthLabelEsp.Text = "  Possible Age: 16"
+                elseif table.find(age13,cringewords:upper()) then
+                    TelevthLabelEsp.Text = "  Possible Age: 13"
+                elseif table.find(age14,cringewords:upper()) then
+                    TelevthLabelEsp.Text = "  Possible Age: 14"
+                elseif table.find(age15,cringewords:upper()) then
+                    TelevthLabelEsp.Text = "  Possible Age: 15"
+                elseif table.find(age16,cringewords:upper()) then
+                    TelevthLabelEsp.Text = "  Possible Age: 16"
+                end
+            end)
+        end
+        if Host and Host.Character then
+            local europe = {'minimise', 'behaviour', 'tyre', 'colour', 'mum', 'sulphur', 'gray', 'aluminium', 'manoeuvre', 'flavour', 'humour', 'labour', 'neighbour', 'analyse', 'defence', 'license', 'offence', 'fulfil', 'rumour', 'honour', 'baboon', 'dirty americans'} -- last 2 from scar
+            local japan = {'富', '士', '山'} -- i know japan isnt a continent lol
+            local china = {'的', '一', '是', '不'} -- i know china isnt a continent lol
+            local NA = {'jit', 'color', 'gon', 'finna', 'cuz', 'bum', 'bussin', 'banger', 'gucci', 'yas', 'yass', 'yasss', 'kek', 'les', 'nca', 'nc', 'cry', 'ur black', 'black', 'oops', 'oop', 'trap', 'trap house', 'trapper', 'crip', 'bloods', 'crib', 'L'} -- alot of coon words cringe
+            Host.Chatted:Connect(function(coonwords)
+                if table.find(europe,coonwords:lower()) then
+                    ThirteethLabelEsp.Text = "  Possible Continent: Europe (UK)"
+                elseif table.find(europe,coonwords:upper()) then
+                    ThirteethLabelEsp.Text = "  Possible Continent: Europe (UK)"
+                elseif table.find(japan,coonwords:lower()) then
+                    ThirteethLabelEsp.Text = "  Possible Continent: Asia (Japan)"
+                elseif table.find(japan,coonwords:upper()) then
+                    ThirteethLabelEsp.Text = "  Possible Continent: Asia (Japan)"
+                elseif table.find(china,coonwords:lower()) then
+                    ThirteethLabelEsp.Text = "  Possible Continent: Asia (China)"
+                elseif table.find(china,coonwords:upper()) then
+                    ThirteethLabelEsp.Text = "  Possible Continent: Asia (China)"
+                elseif table.find(NA,coonwords:lower()) then
+                    ThirteethLabelEsp.Text = "  Possible Continent: NA (US)"
+                elseif table.find(NA,coonwords:upper()) then
+                    ThirteethLabelEsp.Text = "  Possible Continent: NA (US)"
+                end
+            end)
+        end
+        if Host and Host.Character then
+            local edaterwords = {'mommy', 'daddy', 'mamas', 'mama', 'momma', 'mami', 'bae', 'baby', 'boo', 'ily', 'mwa', 'mwah', 'muah', 'mauh', 'daddi', 'dady', 'dadi', 'love', 'you cute', 'cute', 'my bf', 'my gf', 'daddys', 'daddis', 'dadys'}
+            Host.Chatted:Connect(function(edater)
+                if table.find(edaterwords,edater:lower()) then
+                    FiftheenthLabelEsp.Text = "  Possible E-Dater: true"
+                elseif table.find(edaterwords,edater:upper()) then
+                    FiftheenthLabelEsp.Text = "  Possible E-Dater: true"
+                end
+            end)
+            local corny_names = {'his', 'her', 'fangirl', 'fanboy', 'ilove', 'love', 'gf', 'bf', 'iscute', 'She', 'he', 'heluvs', 'sheluvs'}
+            if table.find(corny_names, Host.Name:lower()) then
+                FiftheenthLabelEsp.Text = "  Possible E-Dater: true"
+            elseif table.find(corny_names, Host.Name:upper()) then
+                FiftheenthLabelEsp.Text = "  Possible E-Dater: true"
+            end
+            if table.find(corny_names, Host.DisplayName:upper()) then
+                FiftheenthLabelEsp.Text = "  Possible E-Dater: true"
+            elseif table.find(corny_names, Host.DisplayName:lower()) then
+                FiftheenthLabelEsp.Text = "  Possible E-Dater: true"
+            end
+        end
+        if Host.CameraMaxZoomDistance == 30 then
+            FourteenthLabelEsp.Text = "  Exploiter:"
+        else
+            FourteenthLabelEsp.Text = "  Exploiter: true"
+        end
+        if Host.DataFolder.Information:FindFirstChild'ArmorSave'.Value == 0 then
+            TenthLabelEsp.Text = "  Armor: false"
+        else
+            TenthLabelEsp.Text = "  Armor: true"
+        end
+        if Host.DataFolder:FindFirstChild'Warning' then
+            SixteenthLabelEsp.Text = "  Warnings: "..Host.DataFolderL:FindFirstChild'Warning'.Value
+        end
+        if Host.Backpack:FindFirstChild'[RPG]' then
+            SeventeenthLabelEsp.Text = "  RPG-User: true"
+        elseif not Host.Backpack:FindFirstChild'[RPG]' then
+            SeventeenthLabelEsp.Text = "  RPG-User: false"
+        end
+    end)
 end
 
 RunService.Stepped:Connect(function()
@@ -1494,7 +2053,6 @@ RunService.Stepped:Connect(function()
 	else
 		return nil
 	end
-
 end)
 
 RunService.Stepped:Connect(function()
@@ -1622,6 +2180,10 @@ UserInputService.InputBegan:Connect(function(Action, NoChat)
 	if Action.KeyCode == Enum.KeyCode.D then
 		KeysTable['D'] = true
 	end
+
+    if Action.KeyCode == Enum.KeyCode[CamlockKey] then
+        Camlock = not Camlock
+    end
 end)
 
 UserInputService.InputEnded:Connect(function(ActionEnd)
@@ -1692,8 +2254,8 @@ TracersButton.MouseButton1Click:Connect(function()
 end)
 
 MoreInfoButton.MouseButton1Click:Connect(function()
-	MorInfoEsp = not MorInfoEsp
-	UserNotifications('Pyrus', 'More Info Esp is now '..tostring(MorInfoEsp))
+	MoreInfoEsp = not MoreInfoEsp
+	UserNotifications('Pyrus', 'More Info Esp is now '..tostring(MoreInfoEsp))
 	if MoreInfoEsp then
 		MoreInfoButton = 'X'
 		task.wait(0.2)
@@ -1760,6 +2322,18 @@ ShapesButton.MouseButton1Click:Connect(function()
 	end
 end)
 
+DeepInfoButton.MouseButton1Click:Connect(function()
+    DeepInfo = not DeepInfo
+    if DeepInfo then
+        DeepInfoButton.Text = 'X'
+        task.wait(0.2)
+        BackFrameMoreInfoFrameEsp.Visible = true
+    elseif not DeepInfo then
+        DeepInfoButton.Text = ''
+        BackFrameMoreInfoFrameEsp.Visible = false
+    end
+end)
+
 CamlockTargetBox.FocusLost:Connect(function()
 	if string.len(CamlockTargetBox.Text) > 0 then
 		CamlockTarget = searchdata(string.upper(string.sub(tostring(CamlockTargetBox.Text),1,1)))
@@ -1778,6 +2352,16 @@ EspTargetBox.FocusLost:Connect(function()
 	end
 end)
 
+DeepInfoTargetBox.FocusLost:Connect(function()
+    if string.len(DeepInfoTargetBox.Text) > 0 then
+        DeepInfoTarget = searchdata(string.upper(string.sub(tostring(DeepInfoTargetBox.Text),1,1)))
+        if DeepInfoTarget then
+            DeepInfoFunction(DeepInfoTarget)
+        end
+    end
+end)
+
 local Sound = Instance.new('Sound')
 Sound.Parent = game:GetService('Workspace')
 Sound.SoundId = UserJoins
+Sound.Playing = true
