@@ -2,6 +2,13 @@
 
 --[[
 	Make More Info Esp (have deep info on the target)
+    Make something to identify a Pyrus User
+    Make Noclip
+    Make easy FOV
+    Make Custom Colors work
+    Make Remove Buttons work
+    Make Joins and Leaves in Chat
+    Make Save Settings to UI
 ]]--
 
 getgenv().Players = game:GetService'Players';
@@ -13,6 +20,14 @@ getgenv().UserInputService = game:GetService'UserInputService'
 getgenv().UserNotifications = function(title, text, time) game.StarterGui:SetCore("SendNotification", {Title = title; Text = text; Icon = 'rbxassetid://13941412659'; Duration = time;}) end
 getgenv().Camera = game:GetService'Workspace'.CurrentCamera
 getgenv().StarterGui = game:GetService'StarterGui'
+getgenv().GetHead = function() return LocalPlayer.Character:FindFirstChild'Head' end
+getgenv().GetUpperTorso = function() return LocalPlayer.Character:FindFirstChild'UpperTorso' end
+getgenv().GetLowerTorso = function() return LocalPlayer.Character:FindFirstChild'LowerTorso' end
+getgenv().getHttp = game:GetService'HttpService'
+local PyrusSettingsFile;
+pcall(function()
+    PyrusSettingsFile = readfile('PYRUSSETTINGS.lua')
+end)
 
 -- | Booleans | --
 
@@ -29,7 +44,9 @@ local EspShapesFrameToggle = false
 local LookVectorSprint = false
 local LookVectorSprinting = false
 local MoreInfoEsp = false
+local Noclip = false
 local RectangeEsp = true
+local RestoreUISettings = false
 local ShapesEsp = true
 local Sprint = false
 local SprintGui = false
@@ -42,6 +59,7 @@ local BlinkSpeed = 8;
 local CFrameSpeed = 5;
 local ThicknessDraw = 2;
 local Radius = 70;
+local SpinSpeed = 30;
 
 -- | Hotkeys | --
 
@@ -98,12 +116,16 @@ local ChatMsg = {
     ['Text'] = 'Pyrus';
 }
 
+local UiColors = {
+    ['HealthBar'] = nil;
+}
+
 
 -- | Gui | --
 
-local Yas = Instance.new("ScreenGui")
-Yas.Name = "Yas"
-Yas.Parent = LocalPlayer:WaitForChild("PlayerGui")
+local Yas = Instance.new'ScreenGui'
+Yas.Name = "Yas" 
+Yas.Parent = game:WaitForChild'CoreGui'
 Yas.ResetOnSpawn = false
 
 local BackFrameToStatusFrame = Instance.new("ImageLabel")
@@ -928,36 +950,46 @@ ShutdownText.TextColor3 = Color3.fromRGB(255, 255, 255)
 ShutdownText.TextSize = 14.000
 ShutdownText.TextXAlignment = Enum.TextXAlignment.Left
 
-local UiScrollFrame = Instance.new("Frame")
-UiScrollFrame.Name = "UiScrollFrame"
-UiScrollFrame.Parent = ScrollFrameOneMisc
-UiScrollFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-UiScrollFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-UiScrollFrame.BorderSizePixel = 0
-UiScrollFrame.Position = UDim2.new(0.0299999993, 0, 0.0900000036, 0)
-UiScrollFrame.Size = UDim2.new(0, 215, 0, 200)
+local ChatFrame = Instance.new("Frame")
+ChatFrame.Name = "ChatFrame"
+ChatFrame.Parent = ScrollFrameOneMisc
+ChatFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ChatFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ChatFrame.BorderSizePixel = 0
+ChatFrame.Position = UDim2.new(0.0299999993, 0, 0.38499999, 0)
+ChatFrame.Size = UDim2.new(0, 215, 0, 85)
 
-local UserInterfaceTitle = Instance.new("TextLabel")
-UserInterfaceTitle.Name = "UserInterfaceTitle"
-UserInterfaceTitle.Parent = UiScrollFrame
-UserInterfaceTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-UserInterfaceTitle.BackgroundTransparency = 1.000
-UserInterfaceTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
-UserInterfaceTitle.BorderSizePixel = 0
-UserInterfaceTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
-UserInterfaceTitle.Size = UDim2.new(0, 61, 0, 19)
-UserInterfaceTitle.Font = Enum.Font.Highway
-UserInterfaceTitle.Text = "User Interface"
-UserInterfaceTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-UserInterfaceTitle.TextSize = 13.000
-UserInterfaceTitle.TextXAlignment = Enum.TextXAlignment.Left
+local ChatFrame = Instance.new("Frame")
+ChatFrame.Name = "ChatFrame"
+ChatFrame.Parent = ScrollFrameOneMisc
+ChatFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+ChatFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ChatFrame.BorderSizePixel = 0
+ChatFrame.Position = UDim2.new(0.0299999993, 0, 0.38499999, 0)
+ChatFrame.Size = UDim2.new(0, 215, 0, 85)
+
+local ChatTitle = Instance.new("TextLabel")
+ChatTitle.Name = "ChatTitle"
+ChatTitle.Parent = ChatFrame
+ChatTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ChatTitle.BackgroundTransparency = 1.000
+ChatTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ChatTitle.BorderSizePixel = 0
+ChatTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+ChatTitle.Size = UDim2.new(0, 61, 0, 19)
+ChatTitle.Font = Enum.Font.Highway
+ChatTitle.Text = "Chat"
+ChatTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+ChatTitle.TextSize = 13.000
+ChatTitle.TextWrapped = true
+ChatTitle.TextXAlignment = Enum.TextXAlignment.Left
 
 local ChatButton = Instance.new("TextButton")
 ChatButton.Name = "ChatButton"
-ChatButton.Parent = UiScrollFrame
+ChatButton.Parent = ChatFrame
 ChatButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 ChatButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
-ChatButton.Position = UDim2.new(0.0139534883, 0, 0.12715134, 0)
+ChatButton.Position = UDim2.new(0.0139534883, 0, 0.288817585, 0)
 ChatButton.Size = UDim2.new(0, 13, 0, 13)
 ChatButton.Font = Enum.Font.Highway
 ChatButton.Text = ""
@@ -979,33 +1011,383 @@ ChatText.TextColor3 = Color3.fromRGB(255, 255, 255)
 ChatText.TextSize = 14.000
 ChatText.TextXAlignment = Enum.TextXAlignment.Left
 
-local ShudownButton = Instance.new("TextButton")
-ShudownButton.Name = "ShudownButton"
-ShudownButton.Parent = UiScrollFrame
-ShudownButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-ShudownButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
-ShudownButton.Position = UDim2.new(0.0139534883, 0, 0.238998562, 0)
-ShudownButton.Size = UDim2.new(0, 13, 0, 13)
-ShudownButton.Visible = false
-ShudownButton.Font = Enum.Font.Highway
-ShudownButton.Text = ""
-ShudownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ShudownButton.TextSize = 14.000
+local ChatMessageBox = Instance.new("TextBox")
+ChatMessageBox.Name = "ChatMessageBox"
+ChatMessageBox.Parent = ChatFrame
+ChatMessageBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ChatMessageBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ChatMessageBox.BorderSizePixel = 0
+ChatMessageBox.Position = UDim2.new(0.353488386, 0, 0.498630524, 0)
+ChatMessageBox.Size = UDim2.new(0, 128, 0, 21)
+ChatMessageBox.Font = Enum.Font.Ubuntu
+ChatMessageBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+ChatMessageBox.PlaceholderText = "Pyrus"
+ChatMessageBox.Text = ""
+ChatMessageBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+ChatMessageBox.TextSize = 14.000
 
-local ShutdownText = Instance.new("TextLabel")
-ShutdownText.Name = "ShutdownText"
-ShutdownText.Parent = ShudownButton
-ShutdownText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ShutdownText.BackgroundTransparency = 1.000
-ShutdownText.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ShutdownText.BorderSizePixel = 0
-ShutdownText.Position = UDim2.new(1.15384614, 0, 0, 0)
-ShutdownText.Size = UDim2.new(0, 52, 0, 13)
-ShutdownText.Font = Enum.Font.Highway
-ShutdownText.Text = " - Shutdown"
-ShutdownText.TextColor3 = Color3.fromRGB(255, 255, 255)
-ShutdownText.TextSize = 14.000
-ShutdownText.TextXAlignment = Enum.TextXAlignment.Left
+local ChatMessageText = Instance.new("TextLabel")
+ChatMessageText.Name = "ChatMessageText"
+ChatMessageText.Parent = ChatMessageBox
+ChatMessageText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ChatMessageText.BackgroundTransparency = 1.000
+ChatMessageText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ChatMessageText.BorderSizePixel = 0
+ChatMessageText.Position = UDim2.new(0.135755539, 0, -1.17367113, 0)
+ChatMessageText.Size = UDim2.new(0, 92, 0, 15)
+ChatMessageText.Font = Enum.Font.Highway
+ChatMessageText.Text = "Intro Message"
+ChatMessageText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ChatMessageText.TextSize = 14.000
+
+local JoinsButton = Instance.new("TextButton")
+JoinsButton.Name = "JoinsButton"
+JoinsButton.Parent = ChatFrame
+JoinsButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+JoinsButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+JoinsButton.Position = UDim2.new(0.0140000004, 0, 0.550000012, 0)
+JoinsButton.Size = UDim2.new(0, 13, 0, 13)
+JoinsButton.Font = Enum.Font.Highway
+JoinsButton.Text = ""
+JoinsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+JoinsButton.TextSize = 14.000
+
+local JoinsText = Instance.new("TextLabel")
+JoinsText.Name = "JoinsText"
+JoinsText.Parent = JoinsButton
+JoinsText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+JoinsText.BackgroundTransparency = 1.000
+JoinsText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+JoinsText.BorderSizePixel = 0
+JoinsText.Position = UDim2.new(1.15384614, 0, 0, 0)
+JoinsText.Size = UDim2.new(0, 52, 0, 13)
+JoinsText.Font = Enum.Font.Highway
+JoinsText.Text = " - Joins"
+JoinsText.TextColor3 = Color3.fromRGB(255, 255, 255)
+JoinsText.TextSize = 14.000
+JoinsText.TextXAlignment = Enum.TextXAlignment.Left
+
+local LeavesButton = Instance.new("TextButton")
+LeavesButton.Name = "LeavesButton"
+LeavesButton.Parent = ChatFrame
+LeavesButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+LeavesButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+LeavesButton.Position = UDim2.new(0.0140000004, 0, 0.800000012, 0)
+LeavesButton.Size = UDim2.new(0, 13, 0, 13)
+LeavesButton.Font = Enum.Font.Highway
+LeavesButton.Text = ""
+LeavesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+LeavesButton.TextSize = 14.000
+
+local LeavesButtonText = Instance.new("TextLabel")
+LeavesButtonText.Name = "LeavesButtonText"
+LeavesButtonText.Parent = LeavesButton
+LeavesButtonText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+LeavesButtonText.BackgroundTransparency = 1.000
+LeavesButtonText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+LeavesButtonText.BorderSizePixel = 0
+LeavesButtonText.Position = UDim2.new(1.15384614, 0, 0, 0)
+LeavesButtonText.Size = UDim2.new(0, 52, 0, 13)
+LeavesButtonText.Font = Enum.Font.Highway
+LeavesButtonText.Text = " - Leaves"
+LeavesButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+LeavesButtonText.TextSize = 14.000
+LeavesButtonText.TextXAlignment = Enum.TextXAlignment.Left
+
+local UiScrollFrame = Instance.new("Frame")
+UiScrollFrame.Name = "UiScrollFrame"
+UiScrollFrame.Parent = ScrollFrameOneMisc
+UiScrollFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+UiScrollFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+UiScrollFrame.BorderSizePixel = 0
+UiScrollFrame.Position = UDim2.new(0.0299999993, 0, 0.0900000036, 0)
+UiScrollFrame.Size = UDim2.new(0, 215, 0, 300)
+
+local UserInterfaceTitle = Instance.new("TextLabel")
+UserInterfaceTitle.Name = "UserInterfaceTitle"
+UserInterfaceTitle.Parent = UiScrollFrame
+UserInterfaceTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+UserInterfaceTitle.BackgroundTransparency = 1.000
+UserInterfaceTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+UserInterfaceTitle.BorderSizePixel = 0
+UserInterfaceTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779511291, 0)
+UserInterfaceTitle.Size = UDim2.new(0, 61, 0, 19)
+UserInterfaceTitle.Font = Enum.Font.Highway
+UserInterfaceTitle.Text = "User Interface"
+UserInterfaceTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+UserInterfaceTitle.TextSize = 13.000
+UserInterfaceTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local HealthBarColorBox = Instance.new("TextBox")
+HealthBarColorBox.Name = "HealthBarColorBox"
+HealthBarColorBox.Parent = UiScrollFrame
+HealthBarColorBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+HealthBarColorBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HealthBarColorBox.BorderSizePixel = 0
+HealthBarColorBox.Position = UDim2.new(0.0139534883, 0, 0.147796839, 0)
+HealthBarColorBox.Size = UDim2.new(0, 93, 0, 21)
+HealthBarColorBox.Font = Enum.Font.Ubuntu
+HealthBarColorBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+HealthBarColorBox.PlaceholderText = " 36, 182, 3 "
+HealthBarColorBox.Text = ""
+HealthBarColorBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+HealthBarColorBox.TextSize = 14.000
+
+local HealthBarColorText = Instance.new("TextLabel")
+HealthBarColorText.Name = "HealthBarColorText"
+HealthBarColorText.Parent = HealthBarColorBox
+HealthBarColorText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+HealthBarColorText.BackgroundTransparency = 1.000
+HealthBarColorText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HealthBarColorText.BorderSizePixel = 0
+HealthBarColorText.Position = UDim2.new(0.0107553136, 0, -1.07843161, 0)
+HealthBarColorText.Size = UDim2.new(0, 92, 0, 15)
+HealthBarColorText.Font = Enum.Font.Highway
+HealthBarColorText.Text = "Health Bar Color"
+HealthBarColorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+HealthBarColorText.TextSize = 14.000
+
+local HealthColorFrame = Instance.new("Frame")
+HealthColorFrame.Name = "HealthColorFrame"
+HealthColorFrame.Parent = HealthBarColorBox
+HealthColorFrame.BackgroundColor3 = Color3.fromRGB(36, 182, 3)
+HealthColorFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+HealthColorFrame.BorderSizePixel = 0
+HealthColorFrame.Position = UDim2.new(0.903656363, 0, 0.190476194, 0)
+HealthColorFrame.Size = UDim2.new(0, 5, 0, 5)
+
+local EnergyBarColorBox = Instance.new("TextBox")
+EnergyBarColorBox.Name = "EnergyBarColorBox"
+EnergyBarColorBox.Parent = UiScrollFrame
+EnergyBarColorBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+EnergyBarColorBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EnergyBarColorBox.BorderSizePixel = 0
+EnergyBarColorBox.Position = UDim2.new(0.516279042, 0, 0.147796839, 0)
+EnergyBarColorBox.Size = UDim2.new(0, 93, 0, 21)
+EnergyBarColorBox.Font = Enum.Font.Ubuntu
+EnergyBarColorBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+EnergyBarColorBox.PlaceholderText = " 182, 182, 9 "
+EnergyBarColorBox.Text = ""
+EnergyBarColorBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+EnergyBarColorBox.TextSize = 14.000
+
+local EnergyBarColorText = Instance.new("TextLabel")
+EnergyBarColorText.Name = "EnergyBarColorText"
+EnergyBarColorText.Parent = EnergyBarColorBox
+EnergyBarColorText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+EnergyBarColorText.BackgroundTransparency = 1.000
+EnergyBarColorText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EnergyBarColorText.BorderSizePixel = 0
+EnergyBarColorText.Position = UDim2.new(0.0390000008, 0, -1, 0)
+EnergyBarColorText.Size = UDim2.new(0, 85, 0, 15)
+EnergyBarColorText.Font = Enum.Font.Highway
+EnergyBarColorText.Text = "Energy Bar Color"
+EnergyBarColorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+EnergyBarColorText.TextSize = 14.000
+
+local EnergyColorFrame = Instance.new("Frame")
+EnergyColorFrame.Name = "EnergyColorFrame"
+EnergyColorFrame.Parent = EnergyBarColorBox
+EnergyColorFrame.BackgroundColor3 = Color3.fromRGB(182, 182, 9)
+EnergyColorFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+EnergyColorFrame.BorderSizePixel = 0
+EnergyColorFrame.Position = UDim2.new(0.903656363, 0, 0.190476194, 0)
+EnergyColorFrame.Size = UDim2.new(0, 5, 0, 5)
+
+local ArmorBarColorBox = Instance.new("TextBox")
+ArmorBarColorBox.Name = "ArmorBarColorBox"
+ArmorBarColorBox.Parent = UiScrollFrame
+ArmorBarColorBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ArmorBarColorBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ArmorBarColorBox.BorderSizePixel = 0
+ArmorBarColorBox.Position = UDim2.new(0.0139534883, 0, 0.331130177, 0)
+ArmorBarColorBox.Size = UDim2.new(0, 93, 0, 21)
+ArmorBarColorBox.Font = Enum.Font.Ubuntu
+ArmorBarColorBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+ArmorBarColorBox.PlaceholderText = " 0, 136, 194 "
+ArmorBarColorBox.Text = ""
+ArmorBarColorBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+ArmorBarColorBox.TextSize = 14.000
+
+local ArmorBarColorText = Instance.new("TextLabel")
+ArmorBarColorText.Name = "ArmorBarColorText"
+ArmorBarColorText.Parent = ArmorBarColorBox
+ArmorBarColorText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+ArmorBarColorText.BackgroundTransparency = 1.000
+ArmorBarColorText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ArmorBarColorText.BorderSizePixel = 0
+ArmorBarColorText.Position = UDim2.new(0.0107553136, 0, -1.07843161, 0)
+ArmorBarColorText.Size = UDim2.new(0, 92, 0, 15)
+ArmorBarColorText.Font = Enum.Font.Highway
+ArmorBarColorText.Text = "Armor Bar Color"
+ArmorBarColorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+ArmorBarColorText.TextSize = 14.000
+
+local ArmorColorFrame = Instance.new("Frame")
+ArmorColorFrame.Name = "ArmorColorFrame"
+ArmorColorFrame.Parent = ArmorBarColorBox
+ArmorColorFrame.BackgroundColor3 = Color3.fromRGB(0, 136, 194)
+ArmorColorFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ArmorColorFrame.BorderSizePixel = 0
+ArmorColorFrame.Position = UDim2.new(0.903656363, 0, 0.190476194, 0)
+ArmorColorFrame.Size = UDim2.new(0, 5, 0, 5)
+
+local FireArmorBarColorBox = Instance.new("TextBox")
+FireArmorBarColorBox.Name = "FireArmorBarColorBox"
+FireArmorBarColorBox.Parent = UiScrollFrame
+FireArmorBarColorBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+FireArmorBarColorBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FireArmorBarColorBox.BorderSizePixel = 0
+FireArmorBarColorBox.Position = UDim2.new(0.516279042, 0, 0.331130177, 0)
+FireArmorBarColorBox.Size = UDim2.new(0, 93, 0, 21)
+FireArmorBarColorBox.Font = Enum.Font.Ubuntu
+FireArmorBarColorBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+FireArmorBarColorBox.PlaceholderText = " 253, 121, 33 "
+FireArmorBarColorBox.Text = ""
+FireArmorBarColorBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+FireArmorBarColorBox.TextSize = 14.000
+
+local FireArmorBarColorText = Instance.new("TextLabel")
+FireArmorBarColorText.Name = "FireArmorBarColorText"
+FireArmorBarColorText.Parent = FireArmorBarColorBox
+FireArmorBarColorText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+FireArmorBarColorText.BackgroundTransparency = 1.000
+FireArmorBarColorText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FireArmorBarColorText.BorderSizePixel = 0
+FireArmorBarColorText.Position = UDim2.new(0.0107553136, 0, -1.07843161, 0)
+FireArmorBarColorText.Size = UDim2.new(0, 92, 0, 15)
+FireArmorBarColorText.Font = Enum.Font.Highway
+FireArmorBarColorText.Text = "Fire Bar Color"
+FireArmorBarColorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+FireArmorBarColorText.TextSize = 14.000
+
+local FireColorFrame = Instance.new("Frame")
+FireColorFrame.Name = "FireColorFrame"
+FireColorFrame.Parent = FireArmorBarColorBox
+FireColorFrame.BackgroundColor3 = Color3.fromRGB(253, 121, 33)
+FireColorFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+FireColorFrame.BorderSizePixel = 0
+FireColorFrame.Position = UDim2.new(0.903656363, 0, 0.190476194, 0)
+FireColorFrame.Size = UDim2.new(0, 5, 0, 5)
+
+local RemoveUIButton = Instance.new("TextButton")
+RemoveUIButton.Name = "RemoveUIButton"
+RemoveUIButton.Parent = UiScrollFrame
+RemoveUIButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+RemoveUIButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+RemoveUIButton.Position = UDim2.new(0.0140000451, 0, 0.918333352, 0)
+RemoveUIButton.Size = UDim2.new(0, 13, 0, 13)
+RemoveUIButton.Font = Enum.Font.Highway
+RemoveUIButton.Text = ""
+RemoveUIButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RemoveUIButton.TextSize = 14.000
+
+local RemoveUiButtonText = Instance.new("TextLabel")
+RemoveUiButtonText.Name = "RemoveUiButtonText"
+RemoveUiButtonText.Parent = RemoveUIButton
+RemoveUiButtonText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+RemoveUiButtonText.BackgroundTransparency = 1.000
+RemoveUiButtonText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+RemoveUiButtonText.BorderSizePixel = 0
+RemoveUiButtonText.Position = UDim2.new(1.15384614, 0, 0, 0)
+RemoveUiButtonText.Size = UDim2.new(0, 52, 0, 13)
+RemoveUiButtonText.Font = Enum.Font.Highway
+RemoveUiButtonText.Text = " - Remove Buttons"
+RemoveUiButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+RemoveUiButtonText.TextSize = 14.000
+RemoveUiButtonText.TextXAlignment = Enum.TextXAlignment.Left
+
+local RestoreOldUIButton = Instance.new("TextButton")
+RestoreOldUIButton.Name = "RestoreOldUIButton"
+RestoreOldUIButton.Parent = UiScrollFrame
+RestoreOldUIButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+RestoreOldUIButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+RestoreOldUIButton.Position = UDim2.new(0.0140000451, 0, 0.851666689, 0)
+RestoreOldUIButton.Size = UDim2.new(0, 13, 0, 13)
+RestoreOldUIButton.Font = Enum.Font.Highway
+RestoreOldUIButton.Text = ""
+RestoreOldUIButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RestoreOldUIButton.TextSize = 14.000
+
+local RestoreOldUiText = Instance.new("TextLabel")
+RestoreOldUiText.Name = "RestoreUIText"
+RestoreOldUiText.Parent = RestoreOldUIButton
+RestoreOldUiText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+RestoreOldUiText.BackgroundTransparency = 1.000
+RestoreOldUiText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+RestoreOldUiText.BorderSizePixel = 0
+RestoreOldUiText.Position = UDim2.new(1.15384614, 0, 0, 0)
+RestoreOldUiText.Size = UDim2.new(0, 52, 0, 13)
+RestoreOldUiText.Font = Enum.Font.Highway
+RestoreOldUiText.Text = " - Sync Old UI Settings"
+RestoreOldUiText.TextColor3 = Color3.fromRGB(255, 255, 255)
+RestoreOldUiText.TextSize = 14.000
+RestoreOldUiText.TextXAlignment = Enum.TextXAlignment.Left
+
+local SaveUIButton = Instance.new("TextButton")
+SaveUIButton.Name = "SaveUIButton"
+SaveUIButton.Parent = UiScrollFrame
+SaveUIButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+SaveUIButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+SaveUIButton.Position = UDim2.new(0.0140000451, 0, 0.778333306, 0)
+SaveUIButton.Size = UDim2.new(0, 13, 0, 13)
+SaveUIButton.Font = Enum.Font.Highway
+SaveUIButton.Text = ""
+SaveUIButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SaveUIButton.TextSize = 14.000
+
+local SaveUIText = Instance.new("TextLabel")
+SaveUIText.Name = "SaveUIText"
+SaveUIText.Parent = SaveUIButton
+SaveUIText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SaveUIText.BackgroundTransparency = 1.000
+SaveUIText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SaveUIText.BorderSizePixel = 0
+SaveUIText.Position = UDim2.new(1.15384614, 0, 0, 0)
+SaveUIText.Size = UDim2.new(0, 52, 0, 13)
+SaveUIText.Font = Enum.Font.Highway
+SaveUIText.Text = " - Save UI Settings"
+SaveUIText.TextColor3 = Color3.fromRGB(255, 255, 255)
+SaveUIText.TextSize = 14.000
+SaveUIText.TextXAlignment = Enum.TextXAlignment.Left
+
+local CashColorBox = Instance.new("TextBox")
+CashColorBox.Name = "CashColorBox"
+CashColorBox.Parent = UiScrollFrame
+CashColorBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+CashColorBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CashColorBox.BorderSizePixel = 0
+CashColorBox.Position = UDim2.new(0.511627913, 0, 0.511130154, 0)
+CashColorBox.Size = UDim2.new(0, 93, 0, 21)
+CashColorBox.Font = Enum.Font.Ubuntu
+CashColorBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+CashColorBox.PlaceholderText = " 95, 255, 87 "
+CashColorBox.Text = ""
+CashColorBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+CashColorBox.TextSize = 14.000
+
+local CashColorText = Instance.new("TextLabel")
+CashColorText.Name = "CashColorText"
+CashColorText.Parent = CashColorBox
+CashColorText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+CashColorText.BackgroundTransparency = 1.000
+CashColorText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CashColorText.BorderSizePixel = 0
+CashColorText.Position = UDim2.new(0.0107553136, 0, -1.07843161, 0)
+CashColorText.Size = UDim2.new(0, 92, 0, 15)
+CashColorText.Font = Enum.Font.Highway
+CashColorText.Text = "Cash Color"
+CashColorText.TextColor3 = Color3.fromRGB(255, 255, 255)
+CashColorText.TextSize = 14.000
+
+local CashColorFrame = Instance.new("Frame")
+CashColorFrame.Name = "CashColorFrame"
+CashColorFrame.Parent = CashColorBox
+CashColorFrame.BackgroundColor3 = Color3.fromRGB(95, 255, 87)
+CashColorFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+CashColorFrame.BorderSizePixel = 0
+CashColorFrame.Position = UDim2.new(0.903656363, 0, 0.190476194, 0)
+CashColorFrame.Size = UDim2.new(0, 5, 0, 5)
 
 local MovementButton = Instance.new("TextButton")
 MovementButton.Name = "MovementButton"
@@ -1636,6 +2018,164 @@ DeepInfoText.TextColor3 = Color3.fromRGB(255, 255, 255)
 DeepInfoText.TextSize = 14.000
 DeepInfoText.TextXAlignment = Enum.TextXAlignment.Left
 
+local SpinFrame = Instance.new("Frame")
+SpinFrame.Name = "SpinFrame"
+SpinFrame.Parent = ScrollingFrameSecondCombat
+SpinFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+SpinFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SpinFrame.BorderSizePixel = 0
+SpinFrame.Position = UDim2.new(0.00300000003, 0, 0.115000002, 0)
+SpinFrame.Size = UDim2.new(0, 215, 0, 104)
+
+local SpinTitle = Instance.new("TextLabel")
+SpinTitle.Name = "SpinTitle"
+SpinTitle.Parent = SpinFrame
+SpinTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SpinTitle.BackgroundTransparency = 1.000
+SpinTitle.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SpinTitle.BorderSizePixel = 0
+SpinTitle.Position = UDim2.new(-0.00236646086, 0, -0.000779518741, 0)
+SpinTitle.Size = UDim2.new(0, 60, 0, 19)
+SpinTitle.Font = Enum.Font.Highway
+SpinTitle.Text = "Spin"
+SpinTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpinTitle.TextSize = 13.000
+SpinTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+local SpinSpeedBox = Instance.new("TextBox")
+SpinSpeedBox.Name = "SpinSpeedBox"
+SpinSpeedBox.Parent = SpinFrame
+SpinSpeedBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+SpinSpeedBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SpinSpeedBox.BorderSizePixel = 0
+SpinSpeedBox.Position = UDim2.new(0.0325581394, 0, 0.417796791, 0)
+SpinSpeedBox.Size = UDim2.new(0, 200, 0, 21)
+SpinSpeedBox.Font = Enum.Font.Highway
+SpinSpeedBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+SpinSpeedBox.PlaceholderText = "30"
+SpinSpeedBox.Text = ""
+SpinSpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpinSpeedBox.TextSize = 14.000
+
+local SpinSpeedText = Instance.new("TextLabel")
+SpinSpeedText.Name = "SpinSpeedText"
+SpinSpeedText.Parent = SpinSpeedBox
+SpinSpeedText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SpinSpeedText.BackgroundTransparency = 1.000
+SpinSpeedText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SpinSpeedText.BorderSizePixel = 0
+SpinSpeedText.Position = UDim2.new(0.264999986, 0, -1.07843161, 0)
+SpinSpeedText.Size = UDim2.new(0, 85, 0, 15)
+SpinSpeedText.Font = Enum.Font.Highway
+SpinSpeedText.Text = "Spin Speed"
+SpinSpeedText.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpinSpeedText.TextSize = 14.000
+
+local SpinButton = Instance.new("TextButton")
+SpinButton.Name = "SpinButton"
+SpinButton.Parent = SpinFrame
+SpinButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+SpinButton.BorderColor3 = Color3.fromRGB(255, 255, 255)
+SpinButton.Position = UDim2.new(0.0700000003, 0, 0.75, 0)
+SpinButton.Size = UDim2.new(0, 13, 0, 13)
+SpinButton.Font = Enum.Font.Highway
+SpinButton.Text = ""
+SpinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpinButton.TextSize = 14.000
+
+local SpinText = Instance.new("TextLabel")
+SpinText.Name = "SpinText"
+SpinText.Parent = SpinButton
+SpinText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SpinText.BackgroundTransparency = 1.000
+SpinText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+SpinText.BorderSizePixel = 0
+SpinText.Position = UDim2.new(1.15384614, 0, 0, 0)
+SpinText.Size = UDim2.new(0, 52, 0, 13)
+SpinText.Font = Enum.Font.Highway
+SpinText.Text = " - Spin"
+SpinText.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpinText.TextSize = 14.000
+SpinText.TextXAlignment = Enum.TextXAlignment.Left
+
+local ParentFrame_RestoreOldUi = Instance.new("Frame")
+ParentFrame_RestoreOldUi.Name = "ParentFrame_RestoreOldUi"
+ParentFrame_RestoreOldUi.Parent = BackFrameMisc
+ParentFrame_RestoreOldUi.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ParentFrame_RestoreOldUi.BackgroundTransparency = 0.550
+ParentFrame_RestoreOldUi.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ParentFrame_RestoreOldUi.BorderSizePixel = 0
+ParentFrame_RestoreOldUi.Size = UDim2.new(0, 464, 0, 552)
+ParentFrame_RestoreOldUi.Visible = false
+ParentFrame_RestoreOldUi.ZIndex = 2
+
+local ButtonFrame_RestoreOldSettings = Instance.new("Frame")
+ButtonFrame_RestoreOldSettings.Name = "ButtonFrame_RestoreOldSettings"
+ButtonFrame_RestoreOldSettings.Parent = ParentFrame_RestoreOldUi
+ButtonFrame_RestoreOldSettings.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ButtonFrame_RestoreOldSettings.BorderColor3 = Color3.fromRGB(0, 0, 0)
+ButtonFrame_RestoreOldSettings.BorderSizePixel = 0
+ButtonFrame_RestoreOldSettings.Position = UDim2.new(0.318965524, 0, 0.425724626, 0)
+ButtonFrame_RestoreOldSettings.Size = UDim2.new(0, 168, 0, 100)
+ButtonFrame_RestoreOldSettings.ZIndex = 3
+
+local AreYouSureText = Instance.new("TextLabel")
+AreYouSureText.Name = "AreYouSureText"
+AreYouSureText.Parent = ButtonFrame_RestoreOldSettings
+AreYouSureText.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+AreYouSureText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+AreYouSureText.BorderSizePixel = 0
+AreYouSureText.Position = UDim2.new(0, 0, -0.00999999978, 0)
+AreYouSureText.Size = UDim2.new(0, 168, 0, 19)
+AreYouSureText.ZIndex = 4
+AreYouSureText.Font = Enum.Font.Highway
+AreYouSureText.Text = "Are you sure?"
+AreYouSureText.TextColor3 = Color3.fromRGB(255, 255, 255)
+AreYouSureText.TextSize = 14.000
+
+local WarningText = Instance.new("TextLabel")
+WarningText.Name = "WarningText"
+WarningText.Parent = ButtonFrame_RestoreOldSettings
+WarningText.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+WarningText.BackgroundTransparency = 1.000
+WarningText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+WarningText.BorderSizePixel = 0
+WarningText.Position = UDim2.new(0, 0, 0.180000007, 0)
+WarningText.Size = UDim2.new(0, 168, 0, 19)
+WarningText.ZIndex = 4
+WarningText.Font = Enum.Font.Highway
+WarningText.Text = "Your UI changes will be deleted"
+WarningText.TextColor3 = Color3.fromRGB(255, 255, 255)
+WarningText.TextSize = 12.000
+
+local YesButton = Instance.new("TextButton")
+YesButton.Name = "YesButton"
+YesButton.Parent = ButtonFrame_RestoreOldSettings
+YesButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+YesButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+YesButton.BorderSizePixel = 0
+YesButton.Position = UDim2.new(0.065476194, 0, 0.533599854, 0)
+YesButton.Size = UDim2.new(0, 61, 0, 26)
+YesButton.ZIndex = 5
+YesButton.Font = Enum.Font.Highway
+YesButton.Text = "Yes"
+YesButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+YesButton.TextSize = 14.000
+
+local NoButton = Instance.new("TextButton")
+NoButton.Name = "NoButton"
+NoButton.Parent = ButtonFrame_RestoreOldSettings
+NoButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+NoButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+NoButton.BorderSizePixel = 0
+NoButton.Position = UDim2.new(0.559523821, 0, 0.533599854, 0)
+NoButton.Size = UDim2.new(0, 61, 0, 26)
+NoButton.ZIndex = 5
+NoButton.Font = Enum.Font.Highway
+NoButton.Text = "No"
+NoButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+NoButton.TextSize = 14.000
+
 CombatButton.MouseButton1Click:Connect(function()
     BackFrameCombat.Visible = not BackFrameCombat.Visible
     BackFrameMisc.Visible = false
@@ -1654,14 +2194,33 @@ MovementButton.MouseButton1Click:Connect(function()
 	BackFrameCombat.Visible = false
 end)
 
-local function Chat()
-	local ChatSpy = LocalPlayer.PlayerGui.Chat.Frame
-	ChatSpy.ChatChannelParentFrame.Visible = true 
-	ChatSpy.ChatBarParentFrame.Position = ChatSpy.ChatChannelParentFrame.Position + UDim2.new(UDim.new(), ChatSpy.ChatChannelParentFrame.Size.Y)
+function Chat()
+	LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame.Visible = true 
+	LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Position = LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame.Position + UDim2.new(UDim.new(), LocalPlayer.PlayerGui.Chat.Frame.ChatChannelParentFrame.Size.Y)
     StarterGui:SetCore('ChatMakeSystemMessage', ChatMsg)
 end
 
-local function searchdata(ply : string)
+if PyrusSettingsFile then
+    PyrusSettingsFile = getHttp:JSONDecode(readfile'PYRUSSETTINGS.lua')
+    for i,v in next, UiColors do
+        if PyrusSettingsFile then
+            UiColors[i] = PyrusSettingsFile[i]
+        end
+    end
+    writefile('PYRUSSETTINGS.lua', getHttp:JSONEncode(UiColors))
+else
+    PyrusSettingsFile = writefile('PYRUSSETTINGS.lua', getHttp:JSONEncode(UiColors))
+end
+
+local function writedata()
+    if writefile and readfile then
+        writefile('PYRUSSETTINGS.lua', getHttp:JSONEncode(UiColors))
+    else
+        return nil
+    end
+end
+
+function searchdata(ply : string)
 	for i,v in next, Players:GetPlayers() do 
 		if string.sub(string.lower(v.Name), 1, string.len(ply)) == string.lower(ply) then 
 			return v
@@ -1675,7 +2234,7 @@ local function Esp(Plr)
          return nil
     end
     if EspColor == nil then
-        UserNotifications('Esp', 'Please select a color')
+        EspColor = EspColorTable['Royal Purple']
     else
         local BillBoard = Instance.new('BillboardGui', Plr.Character.Head)
         local EspLabel = Instance.new('TextLabel', BillBoard)
@@ -1742,6 +2301,7 @@ local function Esp(Plr)
                             Tracer.Visible = false
                         end
                         if RectangeEsp then
+                            ShapesButton.Text = 'X'
                             Box.Visible = true
                             Box.Size = Vector2.new(Division / Hum.Z, Head.Y - Minus.Y, Hum.X)
                             Box.Position = Vector2.new(Hum.X - Box.Size.X / 2, Hum.Y - Box.Size.Y / 2)
@@ -1968,13 +2528,11 @@ local function DeepInfoFunction(Host)
         else
             FourteenthLabelEsp.Text = "  Exploiter: true"
         end
-        if Host.DataFolder.Information:FindFirstChild'ArmorSave'.Value == 0 then
-            TenthLabelEsp.Text = "  Armor: false"
-        else
-            TenthLabelEsp.Text = "  Armor: true"
+        if Host.DataFolder.Information:FindFirstChild'ArmorSave' then
+            TenthLabelEsp.Text = "  Armor: "..Host.DataFolder.Information:FindFirstChild'ArmorSave'.Value
         end
         if Host.DataFolder:FindFirstChild'Warning' then
-            SixteenthLabelEsp.Text = "  Warnings: "..Host.DataFolderL:FindFirstChild'Warning'.Value
+            SixteenthLabelEsp.Text = "  Warnings: "..Host.DataFolder:FindFirstChild'Warning'.Value
         end
         if Host.Backpack:FindFirstChild'[RPG]' then
             SeventeenthLabelEsp.Text = "  RPG-User: true"
@@ -2048,11 +2606,33 @@ RunService.Stepped:Connect(function()
 		end
 	end
 
+    if string.len(SpinSpeedBox.Text) > 0 then
+		if Spin then
+			SpinSpeed = string.upper(string.sub(tostring(SpinSpeedBox.Text),1,3))
+		end
+	end
+
 	if Camlock and CamlockTarget and CamlockTarget.Character and CamlockTarget.Character:FindFirstChild(CamlockedPart) then 
 		Camera.CFrame = CFrame.new(Camera.CFrame.p, CamlockTarget.Character:FindFirstChild(CamlockedPart).CFrame.p)
 	else
 		return nil
 	end
+
+    if Noclip then
+        if LocalPlayer and LocalPlayer.Character then
+            LocalPlayer.Character.Head.CanCollide = false
+            LocalPlayer.Character.UpperTorso.CanCollide = false
+            LocalPlayer.Character.LowerTorso.CanCollide = false
+            LocalPlayer.Character.HumanoidRootPart.CanCollide = false
+        end
+    elseif not Noclip then
+        if LocalPlayer and LocalPlayer.Character then
+            LocalPlayer.Character.Head.CanCollide = true
+            LocalPlayer.Character.UpperTorso.CanCollide = true
+            LocalPlayer.Character.LowerTorso.CanCollide = true
+            LocalPlayer.Character.HumanoidRootPart.CanCollide = true
+        end
+    end
 end)
 
 RunService.Stepped:Connect(function()
@@ -2334,11 +2914,55 @@ DeepInfoButton.MouseButton1Click:Connect(function()
     end
 end)
 
+SpinButton.MouseButton1Click:Connect(function()
+    Spin = not Spin
+    if Spin then
+        SpinButton.Text = 'X'
+        task.wait(.2)
+        Noclip = true
+        getgenv().Spinning = Instance.new'BodyAngularVelocity'
+        Spinning.Parent = LocalPlayer.Character:FindFirstChild'HumanoidRootPart'
+        Spinning.MaxTorque = Vector3.new(0,math.huge,0)
+        RunService.Stepped:Connect(function()
+            Spinning.AngularVelocity = Vector3.new(0,SpinSpeed,0)
+        end)
+    elseif not Spin then
+        SpinButton.Text = ''
+        task.wait(.2)
+        Noclip = false
+        for _,v in pairs(LocalPlayer.Character:FindFirstChild'HumanoidRootPart':GetChildren()) do
+            if v:IsA'BodyAngularVelocity' then
+                v:Destroy()
+            end
+        end
+    end
+end)
+
+RestoreOldUIButton.MouseButton1Click:Connect(function()
+	RestoreOldUIButton.Text = 'X'
+    ParentFrame_RestoreOldUi.Visible = true
+    YesButton.MouseButton1Click:Connect(function()
+        LocalPlayer.PlayerGui.MainScreenGui.Bar.HP.bar.BackgroundColor3 = Color3.fromRGB(36,182,3)
+        LocalPlayer.PlayerGui.MainScreenGui.Bar.Armor.bar.BackgroundColor3 = Color3.fromRGB(0,136,194)
+        LocalPlayer.PlayerGui.MainScreenGui.Bar.Armor.firebar.BackgroundColor3 = Color3.fromRGB(253,121,33)
+        LocalPlayer.PlayerGui.MainScreenGui.Bar.Energy.bar.BackgroundColor3 = Color3.fromRGB(182,182,9)
+        LocalPlayer.PlayerGui.MainScreenGui.MoneyText.TextColor3 = Color3.fromRGB(95,255,87)
+        task.wait(1)
+        ParentFrame_RestoreOldUi.Visible = false
+        RestoreOldUIButton.Text = ''
+    end)
+    NoButton.MouseButton1Click:Connect(function()
+        ParentFrame_RestoreOldUi.Visible = false
+        RestoreOldUIButton.Text = ''
+    end)
+end)
+
 CamlockTargetBox.FocusLost:Connect(function()
 	if string.len(CamlockTargetBox.Text) > 0 then
 		CamlockTarget = searchdata(string.upper(string.sub(tostring(CamlockTargetBox.Text),1,1)))
 		if CamlockTarget then
 			Camlock = true
+            CamlockButton.Text = "X"
 		end
 	end
 end)
@@ -2357,6 +2981,8 @@ DeepInfoTargetBox.FocusLost:Connect(function()
         DeepInfoTarget = searchdata(string.upper(string.sub(tostring(DeepInfoTargetBox.Text),1,1)))
         if DeepInfoTarget then
             DeepInfoFunction(DeepInfoTarget)
+            BackFrameMoreInfoFrameEsp.Visible = true
+            DeepInfoButton.Text = "X"
         end
     end
 end)
