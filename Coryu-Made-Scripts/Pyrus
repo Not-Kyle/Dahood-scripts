@@ -3,12 +3,8 @@
 --[[
 	Make More Info Esp (have deep info on the target)
     Make something to identify a Pyrus User
-    Make Noclip
+    Make Noclip work
     Make easy FOV
-    Make Custom Colors work
-    Make Remove Buttons work
-    Make Joins and Leaves in Chat
-    Make Save Settings to UI
 ]]--
 
 getgenv().Players = game:GetService'Players';
@@ -24,11 +20,14 @@ getgenv().GetHead = function() return LocalPlayer.Character:FindFirstChild'Head'
 getgenv().GetUpperTorso = function() return LocalPlayer.Character:FindFirstChild'UpperTorso' end
 getgenv().GetLowerTorso = function() return LocalPlayer.Character:FindFirstChild'LowerTorso' end
 getgenv().getHttp = game:GetService'HttpService'
-local PyrusSettingsFile;
+local ColorsSaved;
+local ChatSaved;
+makefolder('Pyrus')
+makefolder('Pyrus/Colors')
 pcall(function()
-    PyrusSettingsFile = readfile('PYRUSSETTINGS.lua')
+    ColorsSaved = readfile('Pyrus/Colors/UiColors.lua')
+    ChatSaved = readfile('Pyrus/Chat.lua')
 end)
-
 -- | Booleans | --
 
 local BasicInfo = true
@@ -109,15 +108,19 @@ local EspColorTable = {
 	['Pink'] = Color3.fromRGB(255, 85, 255);
 }
 
+local ChatT = {
+	['T'] = 'Pyrus';
+}
+
 local ChatMsg = {
+    ['TextSize'] = 20;
     ['Color'] = Color3.fromRGB(85,0,255);
     ['Font'] = Enum.Font.Code;
-    ['TextSize'] = 20;
-    ['Text'] = 'Pyrus';
+    ['Text'] = ChatT['T'];
 }
 
 local UiColors = {
-    ['HealthBar'] = nil;
+    ['HotKey'] = 'X';
 }
 
 
@@ -1021,7 +1024,7 @@ ChatMessageBox.Position = UDim2.new(0.353488386, 0, 0.498630524, 0)
 ChatMessageBox.Size = UDim2.new(0, 128, 0, 21)
 ChatMessageBox.Font = Enum.Font.Ubuntu
 ChatMessageBox.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
-ChatMessageBox.PlaceholderText = "Pyrus"
+ChatMessageBox.PlaceholderText = ChatT['T']
 ChatMessageBox.Text = ""
 ChatMessageBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 ChatMessageBox.TextSize = 14.000
@@ -2200,23 +2203,44 @@ function Chat()
     StarterGui:SetCore('ChatMakeSystemMessage', ChatMsg)
 end
 
-if PyrusSettingsFile then
-    PyrusSettingsFile = getHttp:JSONDecode(readfile'PYRUSSETTINGS.lua')
-    for i,v in next, UiColors do
-        if PyrusSettingsFile then
-            UiColors[i] = PyrusSettingsFile[i]
-        end
-    end
-    writefile('PYRUSSETTINGS.lua', getHttp:JSONEncode(UiColors))
+
+if ColorsSaved then
+	ColorsSaved = getHttp:JSONDecode(readfile'Pyrus/Colors/UiColors.lua')
+	for i,v in next, UiColors do
+	    if ColorsSaved then
+	        UiColors[i] = ColorsSaved[i]
+	    end
+	end
+	writefile('Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
 else
-    PyrusSettingsFile = writefile('PYRUSSETTINGS.lua', getHttp:JSONEncode(UiColors))
+	ColorsSaved = writefile('Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
 end
 
-local function writedata()
+if ChatSaved then
+	ChatSaved = getHttp:JSONDecode(readfile'Pyrus/Chat.lua')
+	for i,v in next, ChatT do
+	    if ChatSaved then
+	        ChatT[i] = ChatSaved[i]
+	    end
+	end
+	writefile('Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
+else
+	ChatSaved = writefile('Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
+end
+
+local function savechat()
     if writefile and readfile then
-        writefile('PYRUSSETTINGS.lua', getHttp:JSONEncode(UiColors))
+        writefile('Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
     else
-        return nil
+        UserNotifications('Pyrus - SaveChat()', 'There was an Error with JSONEncode')
+    end
+end
+
+local function savecolors()
+    if writefile and readfile then
+        writefile('Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
+    else
+        UserNotifications('Pyrus - SaveColors()', 'There was an Error with JSONEncode')
     end
 end
 
@@ -2957,6 +2981,13 @@ RestoreOldUIButton.MouseButton1Click:Connect(function()
     end)
 end)
 
+SaveUIButton.MouseButton1Click:Connect(function()
+	SaveUIButton.Text = 'X'
+	savecolors()
+	task.wait(1)
+	SaveUIButton.Text = ''
+end)
+
 CamlockTargetBox.FocusLost:Connect(function()
 	if string.len(CamlockTargetBox.Text) > 0 then
 		CamlockTarget = searchdata(string.upper(string.sub(tostring(CamlockTargetBox.Text),1,1)))
@@ -2985,6 +3016,20 @@ DeepInfoTargetBox.FocusLost:Connect(function()
             DeepInfoButton.Text = "X"
         end
     end
+end)
+
+HealthBarColorBox.FocusLost:Connect(function()
+	if string.len(HealthBarColorBox.Text) > 0 then
+		UiColors['HealthColor'] = string.upper(string.sub(tostring(HealthBarColorBox.Text),1,6))
+		LocalPlayer.PlayerGui.MainScreenGui.Bar.HP.bar.BackgroundColor3 = Color3.fromRGB(UiColors['HealthColor'])
+	end
+end)
+
+ChatMessageBox.FocusLost:Connect(function()
+	if string.len(ChatMessageBox.Text) > 0 then
+		ChatT['T'] = string.upper(string.sub(tostring(ChatMessageBox.Text),1,60))
+		savechat()
+	end
 end)
 
 local Sound = Instance.new('Sound')
