@@ -1,1 +1,0 @@
-game.Players.LocalPlayer:FindFirstChild('PlayerGui').MainScreenGui.MoneyText.TextColor = BrickColor.new("Dove blue")
