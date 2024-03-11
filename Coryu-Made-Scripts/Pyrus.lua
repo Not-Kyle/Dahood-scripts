@@ -14,7 +14,8 @@ getgenv().Teleport = game:GetService'TeleportService'
 getgenv().RunService = game:GetService'RunService'
 getgenv().UserInputService = game:GetService'UserInputService'
 getgenv().UserNotifications = function(title, text, time) game.StarterGui:SetCore("SendNotification", {Title = title; Text = text; Icon = 'rbxassetid://13941412659'; Duration = time;}) end
-getgenv().Camera = game:GetService'Workspace'.CurrentCamera
+getgenv().Work = game:GetService'Workspace'
+getgenv().Camera = Work.CurrentCamera
 getgenv().StarterGui = game:GetService'StarterGui'
 getgenv().GetHead = function() return LocalPlayer.Character:FindFirstChild'Head' end
 getgenv().GetUpperTorso = function() return LocalPlayer.Character:FindFirstChild'UpperTorso' end
@@ -22,11 +23,18 @@ getgenv().GetLowerTorso = function() return LocalPlayer.Character:FindFirstChild
 getgenv().getHttp = game:GetService'HttpService'
 local ColorsSaved;
 local ChatSaved;
-makefolder('Pyrus')
-makefolder('Pyrus/Colors')
+local function FolderCheck()
+    if isfolder('Coryu') == nil then
+        makefolder('Coryu') 
+    elseif isfolder('Coryu/Dahood') == nil then
+        makefolder('Coryu/Dahood')
+    end
+end
+makefolder('Coryu/Dahood/Pyrus')
+makefolder('Coryu/Dahood/Pyrus/Colors')
 pcall(function()
-    ColorsSaved = readfile('Pyrus/Colors/UiColors.lua')
-    ChatSaved = readfile('Pyrus/Chat.lua')
+    ColorsSaved = readfile('Coryu/Dahood/Pyrus/Colors/UiColors.lua')
+    ChatSaved = readfile('Coryu/Dahood/Pyrus/Chat.lua')
 end)
 -- | Booleans | --
 
@@ -2205,32 +2213,32 @@ end
 
 
 if ColorsSaved then
-	ColorsSaved = getHttp:JSONDecode(readfile'Pyrus/Colors/UiColors.lua')
+	ColorsSaved = getHttp:JSONDecode(readfile'Coryu/Dahood/Pyrus/Colors/UiColors.lua')
 	for i,v in next, UiColors do
 	    if ColorsSaved then
 	        UiColors[i] = ColorsSaved[i]
 	    end
 	end
-	writefile('Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
+	writefile('Coryu/Dahood/Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
 else
-	ColorsSaved = writefile('Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
+	ColorsSaved = writefile('Coryu/Dahood/Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
 end
 
 if ChatSaved then
-	ChatSaved = getHttp:JSONDecode(readfile'Pyrus/Chat.lua')
+	ChatSaved = getHttp:JSONDecode(readfile'Coryu/Dahood/Pyrus/Chat.lua')
 	for i,v in next, ChatT do
 	    if ChatSaved then
 	        ChatT[i] = ChatSaved[i]
 	    end
 	end
-	writefile('Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
+	writefile('Coryu/Dahood/Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
 else
-	ChatSaved = writefile('Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
+	ChatSaved = writefile('Coryu/Dahood/Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
 end
 
 local function savechat()
     if writefile and readfile then
-        writefile('Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
+        writefile('Coryu/Dahood/Pyrus/Chat.lua', getHttp:JSONEncode(ChatT))
     else
         UserNotifications('Pyrus - SaveChat()', 'There was an Error with JSONEncode')
     end
@@ -2238,7 +2246,7 @@ end
 
 local function savecolors()
     if writefile and readfile then
-        writefile('Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
+        writefile('Coryu/Dahood/Pyrus/Colors/UiColors.lua', getHttp:JSONEncode(UiColors))
     else
         UserNotifications('Pyrus - SaveColors()', 'There was an Error with JSONEncode')
     end
@@ -3032,7 +3040,7 @@ ChatMessageBox.FocusLost:Connect(function()
 	end
 end)
 
-local Sound = Instance.new('Sound')
-Sound.Parent = game:GetService('Workspace')
+local Sound = Instance.new'Sound'
+Sound.Parent = Work
 Sound.SoundId = UserJoins
 Sound.Playing = true
