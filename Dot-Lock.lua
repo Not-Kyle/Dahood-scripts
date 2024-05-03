@@ -1,8 +1,6 @@
 getgenv().Mattyy = true
 getgenv().Matty = true
  
---- variables
- 
 local CC = game:GetService'Workspace'.CurrentCamera
 local Plr
 local enabled = false
