@@ -18,19 +18,19 @@ RunService.Stepped:Connect(function()
     end
 end)
 
-UserInputService.InputBegan:Connect(function(Array, Kill)
+UserInputService.InputBegan:Connect(function(Args, Kill)
     if Kill then
         return nil
-    elseif Array.KeyCode == Enum.KeyCode.LeftShift then
+    elseif Args.KeyCode == Enum.KeyCode.LeftShift then
         Sprinting = true
-    elseif Array.KeyCode == Enum.KeyCode.X then
+    elseif Args.KeyCode == Enum.KeyCode.X then
         Sprint = not Sprint
         AddNotification('Macro', 'Marco is now '..tostring(Sprint))
     end
 end)
 
-UserInputService.InputEnded:Connect(function(Array)
-    if Array.KeyCode == Enum.KeyCode.LeftShift then
+UserInputService.InputEnded:Connect(function(Args)
+    if Args.KeyCode == Enum.KeyCode.LeftShift then
         Sprinting = false
     end
 end)
