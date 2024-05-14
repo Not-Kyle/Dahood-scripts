@@ -1,4 +1,4 @@
-Spinspeed = 100
+getgenv().Spinspeed = 100
 
 local Spin = Instance.new'BodyAngularVelocity'
 Spin.Parent = game:GetService'Players'.LocalPlayer.Character:FindFirstChild'HumanoidRootPart'
